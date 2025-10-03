@@ -1,17 +1,17 @@
-Maven
+#Maven
 /target/
-Gradle / Android
+#Gradle / Android
 /build/
 .gradle/
 local.properties
 Logs
 .log
-IDEs
+#IDEs
 .idea/
 .iml
 .ipr
 .iws
 .vscode/
-OS
+#OS
 .DS_Store
 Thumbs.db
