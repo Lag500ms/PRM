@@ -28,6 +28,17 @@ public class DataInitializer {
             accountRepository.save(admin);
             System.out.println(" Admin account created: admin69 / admin123");
         }
+
+        if (accountRepository.findByUsername("dealer36").isEmpty()) {
+            Account dealer = Account.builder()
+                    .username("dealer36")
+                    .password(passwordEncoder.encode("dealer123"))
+                    .email("dealer@example.com")
+                    .role(Role.DEALER)
+                    .build();
+
+            accountRepository.save(dealer);
+            System.out.println(" Dealer account created: dealer01 / dealer123");
+        }
     }
 }
-
