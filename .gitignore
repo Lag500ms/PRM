@@ -1,17 +1,26 @@
-#Maven
-/target/
-#Gradle / Android
-/build/
-.gradle/
-local.properties
-Logs
-.log
-#IDEs
-.idea/
-.iml
-.ipr
-.iws
-.vscode/
-#OS
-.DS_Store
-Thumbs.db
+# Maven
+**/target/
+
+# Gradle / Android
+**/build/
+**/.gradle/
+**/local.properties
+**/outputs/
+**/captures/
+
+# Java
+*.class
+
+# Logs
+*.log
+
+# IDEs
+**/.idea/
+*.iml
+*.ipr
+*.iws
+**/.vscode/
+
+# OS
+**/.DS_Store
+**/Thumbs.db
