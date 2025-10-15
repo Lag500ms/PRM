@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:id="@+id/main"
-    android:theme="@style/Theme.MyApplication"
     android:layout_height="match_parent"
     tools:context=".ui.LoginActivity">
 
@@ -24,7 +23,6 @@
     <!-- Language Change -->
     <TextView
         android:id="@+id/tvLanguage"
-        style="@style/TextViewWhiteSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="English · Change"
@@ -36,7 +34,6 @@
     <!-- Username Input -->
     <EditText
         android:id="@+id/etUsername"
-        style="@style/EditTextStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Email or Phone"
@@ -51,7 +48,6 @@
     <!-- Password Input -->
     <EditText
         android:id="@+id/etPassword"
-        style="@style/EditTextStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Password"
@@ -66,7 +62,6 @@
     <!-- Login Button -->
     <Button
         android:id="@+id/btnLogin"
-        style="@style/LoginButtonStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="LOG IN"
