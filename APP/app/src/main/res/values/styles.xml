@@ -1,24 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Style cho TextView trắng nhỏ -->
-    <style name="TextViewWhiteSmall">
-        <item name="android:textColor">@android:color/white</item>
-        <item name="android:textSize">14sp</item>
-    </style>
-
-    <!-- Style cho EditText (Email & Password) -->
-    <style name="EditTextStyle">
-        <item name="android:background">@android:color/transparent</item>
-        <item name="android:textColor">@android:color/white</item>
-        <item name="android:textColorHint">#B0BEC5</item>
-        <item name="android:padding">12dp</item>
-        <item name="android:backgroundTint">@color/edittext_line_color</item>
-    </style>
-
-    <!-- Style cho Button Login -->
-    <style name="LoginButtonStyle">
-        <item name="android:backgroundTint">#334d84</item>
-        <item name="android:textColor">@android:color/white</item>
-        <item name="android:textStyle">bold</item>
+    <!-- Custom TextInputLayout Style with White Hint -->
+    <style name="WhiteHintTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="hintTextColor">@color/white</item>
+        <item name="android:textColorHint">@color/white</item>
+        <item name="boxStrokeColor">@color/text_input_box_stroke_color</item>
+        <item name="boxStrokeWidth">2dp</item>
     </style>
 </resources>
+
