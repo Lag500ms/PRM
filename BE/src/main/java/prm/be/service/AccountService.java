@@ -12,7 +12,6 @@ import prm.be.exception.NotFoundException;
 import prm.be.repository.AccountRepository;
 import prm.be.dto.request.RegisterRequestDTO;
 import prm.be.dto.request.AccountUpdateRequestDTO;
-
 import java.util.List;
 
 @Service
@@ -22,12 +21,25 @@ public class AccountService {
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
 
-    public Account saveAccount(RegisterRequestDTO request) {
+
+    public Account registerByGuest(RegisterRequestDTO request) {
         Account toSave = Account.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .email(request.getEmail())
                 .role(Role.DEALER)
+                .isActive(false)
+                .build();
+        return accountRepository.save(toSave);
+    }
+
+    public Account createDealerByAdmin(RegisterRequestDTO request) {
+        Account toSave = Account.builder()
+                .username(request.getUsername())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .email(request.getEmail())
+                .role(Role.DEALER)
+                .isActive(true)
                 .build();
         return accountRepository.save(toSave);
     }

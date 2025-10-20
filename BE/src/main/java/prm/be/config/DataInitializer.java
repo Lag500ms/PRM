@@ -17,16 +17,16 @@ public class DataInitializer {
 
     @PostConstruct
     public void init() {
-        if (accountRepository.findByUsername("admin69").isEmpty()) {
+        if (accountRepository.findByUsername("admin123").isEmpty()) {
             Account admin = Account.builder()
-                    .username("admin69")
+                    .username("admin123")
                     .password(passwordEncoder.encode("admin123"))
                     .email("admin@example.com")
                     .role(Role.ADMIN)
                     .build();
 
             accountRepository.save(admin);
-            System.out.println(" Admin account created: admin69 / admin123");
+            System.out.println(" Admin account created: admin123 / admin123");
         }
 
         if (accountRepository.findByUsername("dealer36").isEmpty()) {

@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-
+import prm.be.enums.Role;
 
 
 @Data
@@ -20,4 +20,5 @@ public class RegisterRequestDTO {
     private String password;
     @Email(message = "Email should be valid")
     private String email;
+    private Boolean createdByAdmin;
 }

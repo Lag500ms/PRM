@@ -22,10 +22,16 @@ public class AccountController {
     private final AccountService accountService;
     private final ModelMapper modelMapper;
 
+    @PostMapping("/register")
+    public ResponseEntity<AccountDTO> register(@Valid @RequestBody RegisterRequestDTO request) {
+        Account saved = accountService.registerByGuest(request);
+        return ResponseEntity.ok(modelMapper.map(saved, AccountDTO.class));
+    }
+
     @PostMapping("/save")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<AccountDTO> save(@Valid @RequestBody RegisterRequestDTO request) {
-        Account saved = accountService.saveAccount(request);
+    public ResponseEntity<AccountDTO> saveByAdmin(@Valid @RequestBody RegisterRequestDTO request) {
+        Account saved = accountService.createDealerByAdmin(request);
         return ResponseEntity.ok(modelMapper.map(saved, AccountDTO.class));
     }
 

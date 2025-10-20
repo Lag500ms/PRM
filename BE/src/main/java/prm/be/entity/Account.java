@@ -57,5 +57,7 @@ public class Account implements Serializable {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    private boolean isActive;
 }
 
