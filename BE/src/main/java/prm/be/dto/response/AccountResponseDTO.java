@@ -7,7 +7,7 @@ import prm.be.entity.AccountDetails;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class AccountDTO {
+public class AccountResponseDTO {
     private String id;
     private String username;
     private String email;

@@ -4,14 +4,10 @@ package com.example.myapplication.ui;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication.R;
-import com.example.myapplication.model.response.LoginResponse;
 import com.example.myapplication.repository.AuthRepository;
 
 public class LoginActivity extends AppCompatActivity {

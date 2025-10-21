@@ -1,4 +1,4 @@
-package com.example.myapplication.model.response;
+package com.example.myapplication.model.account.response;
 
 import lombok.Data;
 

@@ -22,7 +22,7 @@ import java.io.IOException;
 public class AuthInterceptor implements Interceptor {
 
     private final Context context;
-    private static final String PREF_NAME = "MyAppPrefs";
+    private static final String PREF_NAME = "AuthPrefs";
     private static final String TOKEN_KEY = "token";
 
     public AuthInterceptor(Context context) {
@@ -33,9 +33,11 @@ public class AuthInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request original = chain.request();
         // Skip adding auth header for login calls
-        if (original.url().encodedPath().contains("/v1/auth/login")) {
+        if (original.url().encodedPath().contains("/v1/auth/login")
+                || original.url().encodedPath().contains("/v1/accounts/register")) {
             return chain.proceed(original);
         }
+
         SharedPreferences sp = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         String token = sp.getString(TOKEN_KEY, null);
         if (token == null || token.isEmpty()) {

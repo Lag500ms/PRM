@@ -1,4 +1,4 @@
-package com.example.myapplication.model.request;
+package com.example.myapplication.model.account.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

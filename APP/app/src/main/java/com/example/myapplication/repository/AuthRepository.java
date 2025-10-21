@@ -1,9 +1,9 @@
 package com.example.myapplication.repository;
 
 
-import com.example.myapplication.model.request.LoginRequest;
-import com.example.myapplication.model.response.LoginResponse;
-import com.example.myapplication.network.AuthApi;
+import com.example.myapplication.model.account.request.LoginRequest;
+import com.example.myapplication.model.account.response.LoginResponse;
+import com.example.myapplication.network.AuthApiService;
 import com.example.myapplication.network.RetrofitClient;
 
 import retrofit2.Call;
@@ -12,10 +12,10 @@ import retrofit2.Response;
 
 public class AuthRepository {
 
-    private final AuthApi authApi;
+    private final AuthApiService authApi;
 
     public AuthRepository() {
-        authApi = RetrofitClient.create(AuthApi.class);
+        authApi = RetrofitClient.create(AuthApiService.class);
     }
 
     public void login(String username, String password, LoginCallback callback) {
