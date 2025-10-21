@@ -16,4 +16,12 @@ public class DashboardResponse {
     public java.util.List<MonthlyRevenueItem> monthlyRevenue;
     @SerializedName("lowStock")
     public java.util.List<LowStockItem> lowStock;
+
+    // Thêm thống kê trực quan mới
+    @SerializedName("topSellingVehicles")
+    public java.util.List<TopSellingVehicle> topSellingVehicles;
+    @SerializedName("orderStatusStats")
+    public OrderStatusStats orderStatusStats;
+    @SerializedName("scheduleStatusStats")
+    public ScheduleStatusStats scheduleStatusStats;
 }

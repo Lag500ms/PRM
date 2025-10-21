@@ -14,4 +14,20 @@ public class Summary {
     public long pendingSchedules;
     @SerializedName("completedOrders")
     public long completedOrders;
+
+    // Thêm thống kê chi tiết mới
+    @SerializedName("pendingOrders")
+    public long pendingOrders;
+    @SerializedName("confirmedOrders")
+    public long confirmedOrders;
+    @SerializedName("cancelledOrders")
+    public long cancelledOrders;
+    @SerializedName("totalSchedules")
+    public long totalSchedules;
+    @SerializedName("confirmedSchedules")
+    public long confirmedSchedules;
+    @SerializedName("completedSchedules")
+    public long completedSchedules;
+    @SerializedName("cancelledSchedules")
+    public long cancelledSchedules;
 }
