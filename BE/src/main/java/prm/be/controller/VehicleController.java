@@ -22,14 +22,14 @@ public class VehicleController {
     private final VehicleService vehicleService;
 
     @PostMapping
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<VehicleResponseDTO> create(@RequestBody VehicleRequestDTO dto) {
         Vehicle created = vehicleService.create(dto);
         return ResponseEntity.ok(VehicleResponseDTO.fromEntity(created));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<VehicleResponseDTO> update(
             @PathVariable("id") String id,
             @RequestBody VehicleRequestDTO dto) {
@@ -38,21 +38,28 @@ public class VehicleController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable("id") String id) {
         vehicleService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Lấy vehicle theo ID - ADMIN và DEALER đều có thể xem
+     */
     @GetMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('DEALER')")
     public ResponseEntity<VehicleResponseDTO> getById(@PathVariable("id") String id) {
         Vehicle vehicle = vehicleService.getById(id);
         return ResponseEntity.ok(VehicleResponseDTO.fromEntity(vehicle));
     }
 
+    /**
+     * Lấy danh sách vehicles - ADMIN và DEALER đều có thể xem
+     * DEALER cần xem để thêm vào inventory
+     */
     @GetMapping
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('DEALER')")
     public ResponseEntity<Page<VehicleResponseDTO>> getVehicles(
             @RequestParam(name = "keyword", required = false) String keyword,
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -68,8 +75,7 @@ public class VehicleController {
         Page<VehicleResponseDTO> responsePage = new PageImpl<>(
                 dtos,
                 vehiclesPage.getPageable(),
-                vehiclesPage.getTotalElements()
-        );
+                vehiclesPage.getTotalElements());
 
         return ResponseEntity.ok(responsePage);
     }

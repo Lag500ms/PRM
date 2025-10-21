@@ -41,11 +41,11 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/v1/auth/**",
-                                "/api/v1/auth/**",
-                                "/api/v1/accounts/register"
-                        ).permitAll()
-                        .anyRequest().authenticated()
-                )
+                                "/api/v1/auth/login",
+                                "/api/v1/auth/logout",
+                                "/api/v1/accounts/register")
+                        .permitAll()
+                        .anyRequest().authenticated())
                 .formLogin(form -> form.disable())
                 .httpBasic(basic -> basic.disable())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
@@ -60,8 +60,8 @@ public class SecurityConfig {
                 "/swagger-resources/**",
                 "/swagger-ui/**",
                 "/v3/api-docs/**",
-                "/api/v1/auth/login"
-                );
+                "/api/v1/auth/login",
+                "/api/v1/auth/logout");
     }
 
     @Bean

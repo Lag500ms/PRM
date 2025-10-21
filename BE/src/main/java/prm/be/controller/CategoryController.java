@@ -25,26 +25,34 @@ public class CategoryController {
     private final CategoryService categoryService;
     private final ModelMapper modelMapper;
 
+    /**
+     * Lấy category theo ID - Tất cả user đều có thể xem
+     */
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<CategoryResponseDTO> getCategoryById(@PathVariable("id") String id) {
         Category category = categoryService.getCategoryById(id);
         CategoryResponseDTO categoryResponseDTO = modelMapper.map(category, CategoryResponseDTO.class);
-        categoryService.getCategoryById(id);
         return ResponseEntity.ok(categoryResponseDTO);
     }
 
+    /**
+     * Xóa category - Chỉ ADMIN
+     */
     @DeleteMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<CategoryResponseDTO> delete(@PathVariable("id") String id){
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<CategoryResponseDTO> delete(@PathVariable("id") String id) {
         Category category = categoryService.getCategoryById(id);
         CategoryResponseDTO categoryResponseDTO = modelMapper.map(category, CategoryResponseDTO.class);
         categoryService.delete(id);
         return ResponseEntity.ok(categoryResponseDTO);
     }
 
+    /**
+     * Cập nhật category - Chỉ ADMIN
+     */
     @PutMapping("/update/{id}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CategoryResponseDTO> updateCategory(
             @PathVariable("id") String id,
             @RequestBody CategoryRequestDTO categoryRequestDTO) {
@@ -55,6 +63,9 @@ public class CategoryController {
         return ResponseEntity.ok(responseDTO);
     }
 
+    /**
+     * Lấy tất cả categories - Tất cả user đều có thể xem
+     */
     @GetMapping("/getAll")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<CategoryResponseDTO>> getAllCategories() {
@@ -65,8 +76,11 @@ public class CategoryController {
         return ResponseEntity.ok(categoryResponseDTOS);
     }
 
+    /**
+     * Tạo category mới - Chỉ ADMIN
+     */
     @PostMapping("/create")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CategoryResponseDTO> createCategory(@RequestBody CategoryRequestDTO categoryRequestDTO) {
         Category createdCategory = categoryService.create(categoryRequestDTO);
         CategoryResponseDTO responseDTO = modelMapper.map(createdCategory, CategoryResponseDTO.class);

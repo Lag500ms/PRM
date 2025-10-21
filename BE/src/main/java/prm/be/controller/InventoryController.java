@@ -47,9 +47,13 @@ public class InventoryController {
         return ResponseEntity.ok(inventoryService.createInventoryForDealer(request, acc.getId()));
     }
 
+    /**
+     * Nhận xe từ vehicle và thêm vào dealer inventory
+     * Sẽ trừ quantity từ Vehicle và cộng vào dealer inventory
+     */
     @PutMapping("/quantity")
     @PreAuthorize("hasRole('DEALER')")
-    public ResponseEntity<InventoryResponse> updateQuantity(@Valid @RequestBody UpdateVehicleQuantityRequest request) {
+    public ResponseEntity<InventoryResponse> receiveVehicle(@Valid @RequestBody UpdateVehicleQuantityRequest request) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Account acc = accountService.getAccountByUsername(username);
         return ResponseEntity.ok(inventoryService.updateVehicleQuantity(request, acc.getId()));

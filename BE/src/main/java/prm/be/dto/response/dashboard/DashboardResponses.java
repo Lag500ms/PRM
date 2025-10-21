@@ -17,6 +17,15 @@ public class DashboardResponses {
         private long totalVehiclesInInventory;
         private long pendingSchedules;
         private long completedOrders;
+
+        // Thêm thống kê trực quan
+        private long pendingOrders;
+        private long confirmedOrders;
+        private long cancelledOrders;
+        private long totalSchedules;
+        private long confirmedSchedules;
+        private long completedSchedules;
+        private long cancelledSchedules;
     }
 
     @Data
@@ -57,6 +66,32 @@ public class DashboardResponses {
     }
 
     @Data
+    public static class TopSellingVehicle {
+        private String vehicleId;
+        private String model;
+        private String version;
+        private String categoryName;
+        private long totalSold;
+        private BigDecimal totalRevenue;
+    }
+
+    @Data
+    public static class OrderStatusStats {
+        private long pending;
+        private long confirmed;
+        private long completed;
+        private long cancelled;
+    }
+
+    @Data
+    public static class ScheduleStatusStats {
+        private long pending;
+        private long confirmed;
+        private long completed;
+        private long cancelled;
+    }
+
+    @Data
     public static class DashboardResponse {
         private Summary summary;
         private List<RecentOrderItem> recentOrders;
@@ -64,5 +99,10 @@ public class DashboardResponses {
         private List<InventoryByCategoryItem> inventoryByCategory;
         private List<MonthlyRevenueItem> monthlyRevenue;
         private List<LowStockItem> lowStock;
+
+        // Thêm thống kê trực quan
+        private List<TopSellingVehicle> topSellingVehicles;
+        private OrderStatusStats orderStatusStats;
+        private ScheduleStatusStats scheduleStatusStats;
     }
 }

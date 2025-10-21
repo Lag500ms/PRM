@@ -36,6 +36,11 @@ public class DashboardService {
                 resp.setInventoryByCategory(buildInventoryByCategory(accountId));
                 resp.setMonthlyRevenue(buildMonthlyRevenue(accountId));
                 resp.setLowStock(buildLowStock(accountId));
+
+                // Thêm thống kê trực quan
+                resp.setTopSellingVehicles(buildTopSellingVehicles(accountId));
+                resp.setOrderStatusStats(buildOrderStatusStats(accountId));
+                resp.setScheduleStatusStats(buildScheduleStatusStats(accountId));
                 return resp;
         }
 
@@ -60,11 +65,48 @@ public class DashboardService {
                 long completedOrders = orderRepository.findByAccount_IdAndStatus(accountId, OrderStatus.COMPLETED,
                                 org.springframework.data.domain.PageRequest.of(0, Integer.MAX_VALUE))
                                 .getTotalElements();
+
+                // Thêm thống kê chi tiết
+                long pendingOrders = orderRepository.findByAccount_IdAndStatus(accountId, OrderStatus.PENDING,
+                                org.springframework.data.domain.PageRequest.of(0, Integer.MAX_VALUE))
+                                .getTotalElements();
+                long confirmedOrders = orderRepository.findByAccount_IdAndStatus(accountId, OrderStatus.CONFIRMED,
+                                org.springframework.data.domain.PageRequest.of(0, Integer.MAX_VALUE))
+                                .getTotalElements();
+                long cancelledOrders = orderRepository.findByAccount_IdAndStatus(accountId, OrderStatus.CANCELLED,
+                                org.springframework.data.domain.PageRequest.of(0, Integer.MAX_VALUE))
+                                .getTotalElements();
+
+                long totalSchedules = scheduleRepository.findByAccount_Id(accountId,
+                                org.springframework.data.domain.PageRequest.of(0, Integer.MAX_VALUE))
+                                .getTotalElements();
+                long confirmedSchedules = scheduleRepository
+                                .findByAccount_IdAndStatus(accountId, ScheduleStatus.CONFIRMED,
+                                                org.springframework.data.domain.PageRequest.of(0, Integer.MAX_VALUE))
+                                .getTotalElements();
+                long completedSchedules = scheduleRepository
+                                .findByAccount_IdAndStatus(accountId, ScheduleStatus.COMPLETED,
+                                                org.springframework.data.domain.PageRequest.of(0, Integer.MAX_VALUE))
+                                .getTotalElements();
+                long cancelledSchedules = scheduleRepository
+                                .findByAccount_IdAndStatus(accountId, ScheduleStatus.CANCELLED,
+                                                org.springframework.data.domain.PageRequest.of(0, Integer.MAX_VALUE))
+                                .getTotalElements();
+
                 s.setTotalOrders(totalOrders);
                 s.setTotalRevenue(revenue);
                 s.setTotalVehiclesInInventory(vehicles);
                 s.setPendingSchedules(pendingSchedules);
                 s.setCompletedOrders(completedOrders);
+
+                // Set thống kê chi tiết
+                s.setPendingOrders(pendingOrders);
+                s.setConfirmedOrders(confirmedOrders);
+                s.setCancelledOrders(cancelledOrders);
+                s.setTotalSchedules(totalSchedules);
+                s.setConfirmedSchedules(confirmedSchedules);
+                s.setCompletedSchedules(completedSchedules);
+                s.setCancelledSchedules(cancelledSchedules);
                 return s;
         }
 
@@ -159,5 +201,46 @@ public class DashboardService {
                                         return item;
                                 })
                                 .collect(Collectors.toList());
+        }
+
+        private List<TopSellingVehicle> buildTopSellingVehicles(String accountId) {
+                // Top 5 vehicles bán chạy nhất (dựa trên completed orders)
+                // Note: Cần implement logic tính toán dựa trên order items
+                // Tạm thời return empty list
+                return List.of();
+        }
+
+        private OrderStatusStats buildOrderStatusStats(String accountId) {
+                OrderStatusStats stats = new OrderStatusStats();
+                stats.setPending(orderRepository.findByAccount_IdAndStatus(accountId, OrderStatus.PENDING,
+                                org.springframework.data.domain.PageRequest.of(0, Integer.MAX_VALUE))
+                                .getTotalElements());
+                stats.setConfirmed(orderRepository.findByAccount_IdAndStatus(accountId, OrderStatus.CONFIRMED,
+                                org.springframework.data.domain.PageRequest.of(0, Integer.MAX_VALUE))
+                                .getTotalElements());
+                stats.setCompleted(orderRepository.findByAccount_IdAndStatus(accountId, OrderStatus.COMPLETED,
+                                org.springframework.data.domain.PageRequest.of(0, Integer.MAX_VALUE))
+                                .getTotalElements());
+                stats.setCancelled(orderRepository.findByAccount_IdAndStatus(accountId, OrderStatus.CANCELLED,
+                                org.springframework.data.domain.PageRequest.of(0, Integer.MAX_VALUE))
+                                .getTotalElements());
+                return stats;
+        }
+
+        private ScheduleStatusStats buildScheduleStatusStats(String accountId) {
+                ScheduleStatusStats stats = new ScheduleStatusStats();
+                stats.setPending(scheduleRepository.findByAccount_IdAndStatus(accountId, ScheduleStatus.PENDING,
+                                org.springframework.data.domain.PageRequest.of(0, Integer.MAX_VALUE))
+                                .getTotalElements());
+                stats.setConfirmed(scheduleRepository.findByAccount_IdAndStatus(accountId, ScheduleStatus.CONFIRMED,
+                                org.springframework.data.domain.PageRequest.of(0, Integer.MAX_VALUE))
+                                .getTotalElements());
+                stats.setCompleted(scheduleRepository.findByAccount_IdAndStatus(accountId, ScheduleStatus.COMPLETED,
+                                org.springframework.data.domain.PageRequest.of(0, Integer.MAX_VALUE))
+                                .getTotalElements());
+                stats.setCancelled(scheduleRepository.findByAccount_IdAndStatus(accountId, ScheduleStatus.CANCELLED,
+                                org.springframework.data.domain.PageRequest.of(0, Integer.MAX_VALUE))
+                                .getTotalElements());
+                return stats;
         }
 }

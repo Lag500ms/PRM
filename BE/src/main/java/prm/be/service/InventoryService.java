@@ -50,22 +50,38 @@ public class InventoryService {
 
     @Transactional
     public InventoryResponse updateVehicleQuantity(UpdateVehicleQuantityRequest request, String accountId) {
-        // set quantity for a vehicle inside a dealer-owned inventory
+        // Nhận xe từ vehicle và thêm vào dealer inventory
         Inventory inv = inventoryRepository.findByIdAndAccount_Id(request.getInventoryId(), accountId)
                 .orElseThrow(() -> new NotFoundException("Inventory not found"));
 
         Vehicle vehicle = vehicleRepository.findById(request.getVehicleId())
                 .orElseThrow(() -> new NotFoundException("Vehicle not found"));
 
+        // Kiểm tra đủ quantity từ Vehicle
+        if (vehicle.getQuantity() < request.getQuantity()) {
+            throw new RuntimeException(
+                    "Không đủ số lượng vehicle. Hiện có: " + vehicle.getQuantity() +
+                            ", cần nhận: " + request.getQuantity());
+        }
+
+        // Trừ quantity từ Vehicle
+        int newVehicleQuantity = vehicle.getQuantity() - request.getQuantity();
+        vehicle.setQuantity(newVehicleQuantity);
+        vehicleRepository.save(vehicle);
+
+        // Tìm hoặc tạo VehicleInventory cho dealer
         VehicleInventory vi = vehicleInventoryRepository
                 .findByInventory_Id(inv.getId())
                 .stream()
                 .filter(x -> x.getVehicle().getId().equals(vehicle.getId()))
                 .findFirst()
-                .orElse(VehicleInventory.builder().inventory(inv).vehicle(vehicle).build());
+                .orElse(VehicleInventory.builder().inventory(inv).vehicle(vehicle).quantity(0).build());
 
-        vi.setQuantity(request.getQuantity());
+        // Cộng thêm quantity vào dealer inventory
+        int newDealerQuantity = vi.getQuantity() + request.getQuantity();
+        vi.setQuantity(newDealerQuantity);
         vehicleInventoryRepository.save(vi);
+
         return toResponse(inv);
     }
 
