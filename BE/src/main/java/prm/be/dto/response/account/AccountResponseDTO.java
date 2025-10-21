@@ -1,4 +1,4 @@
-package prm.be.dto.response;
+package prm.be.dto.response.account;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;

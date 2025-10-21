@@ -3,6 +3,7 @@ package com.example.myapplication.repository;
 import com.example.myapplication.model.account.request.AccountUpdateRequestDTO;
 import com.example.myapplication.model.account.request.RegisterRequestDTO;
 import com.example.myapplication.model.account.response.AccountResponseDTO;
+import com.example.myapplication.model.account.response.AccountResponsePageDTO;
 import com.example.myapplication.network.AccountApiService;
 import java.util.List;
 import java.util.Map;
@@ -127,6 +128,26 @@ public class AccountRepository {
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
+                callback.onError(t.getMessage());
+            }
+        });
+    }
+
+    // search account
+    public void searchAccountsByUsername(String keyword, int page, int size,
+                                         RepositoryCallback<AccountResponsePageDTO> callback) {
+        apiService.searchAccountsByUsername(keyword, page, size).enqueue(new Callback<AccountResponsePageDTO>() {
+            @Override
+            public void onResponse(Call<AccountResponsePageDTO> call, Response<AccountResponsePageDTO> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Error: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AccountResponsePageDTO> call, Throwable t) {
                 callback.onError(t.getMessage());
             }
         });

@@ -3,6 +3,7 @@ package com.example.myapplication.network;
 import com.example.myapplication.model.account.request.AccountUpdateRequestDTO;
 import com.example.myapplication.model.account.request.RegisterRequestDTO;
 import com.example.myapplication.model.account.response.AccountResponseDTO;
+import com.example.myapplication.model.account.response.AccountResponsePageDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,14 @@ public interface AccountApiService {
             @Query("email") String email,
             @Query("active") boolean active
     );
+
+    @GET("api/v1/accounts/search")
+    Call<AccountResponsePageDTO> searchAccountsByUsername(
+            @Query("keyword") String keyword,
+            @Query("page") int page,
+            @Query("size") int size
+    );
+
 
 }
 

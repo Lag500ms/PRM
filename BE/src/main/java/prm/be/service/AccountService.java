@@ -3,6 +3,10 @@ package prm.be.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import prm.be.entity.Account;
@@ -11,8 +15,8 @@ import prm.be.enums.Role;
 import prm.be.exception.NotFoundException;
 import prm.be.exception.UnauthorizedException;
 import prm.be.repository.AccountRepository;
-import prm.be.dto.request.RegisterRequestDTO;
-import prm.be.dto.request.AccountUpdateRequestDTO;
+import prm.be.dto.request.account.RegisterRequestDTO;
+import prm.be.dto.request.account.AccountUpdateRequestDTO;
 import java.util.List;
 
 @Service
@@ -150,6 +154,16 @@ public class AccountService {
 
         account.setActive(active);
         accountRepository.save(account);
+    }
+
+    public Page<Account> searchAccount(String keyword, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("username").ascending());
+
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return accountRepository.findAll(pageable);
+        }
+
+        return accountRepository.findByUsernameContainingIgnoreCase(keyword, pageable);
     }
 
 }

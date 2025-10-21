@@ -1,4 +1,4 @@
-package prm.be.dto.request;
+package prm.be.dto.request.account;
 import lombok.Data;
 
 @Data

@@ -4,8 +4,8 @@ package prm.be.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import prm.be.dto.request.LoginRequest;
-import prm.be.dto.response.LoginResponse;
+import prm.be.dto.request.account.LoginRequest;
+import prm.be.dto.response.account.LoginResponse;
 import prm.be.service.AuthService;
 
 @RestController

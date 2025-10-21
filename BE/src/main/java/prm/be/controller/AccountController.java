@@ -3,12 +3,13 @@ package prm.be.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import prm.be.dto.request.RegisterRequestDTO;
-import prm.be.dto.request.AccountUpdateRequestDTO;
-import prm.be.dto.response.AccountResponseDTO;
+import prm.be.dto.request.account.RegisterRequestDTO;
+import prm.be.dto.request.account.AccountUpdateRequestDTO;
+import prm.be.dto.response.account.AccountResponseDTO;
 import prm.be.entity.Account;
 import prm.be.service.AccountService;
 
@@ -88,6 +89,22 @@ public class AccountController {
 
         Map<String, String> response = new HashMap<>();
         response.put("message", active ? "Account activated" : "Account deactivated");
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/search")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<AccountResponseDTO>> searchAccountsByUsername(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<Account> accountPage = accountService.searchAccount(keyword, page, size);
+
+        Page<AccountResponseDTO> response = accountPage.map(acc ->
+                modelMapper.map(acc, AccountResponseDTO.class)
+        );
+
         return ResponseEntity.ok(response);
     }
 

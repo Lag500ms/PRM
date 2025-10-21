@@ -1,4 +1,4 @@
-package prm.be.dto.request;
+package prm.be.dto.request.account;
 
 
 import jakarta.validation.constraints.NotBlank;
