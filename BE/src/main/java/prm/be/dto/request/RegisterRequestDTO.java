@@ -20,5 +20,4 @@ public class RegisterRequestDTO {
     private String password;
     @Email(message = "Email should be valid")
     private String email;
-    private Boolean createdByAdmin;
 }

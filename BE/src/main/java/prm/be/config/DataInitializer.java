@@ -23,6 +23,7 @@ public class DataInitializer {
                     .password(passwordEncoder.encode("admin123"))
                     .email("admin@example.com")
                     .role(Role.ADMIN)
+                    .isActive(true)
                     .build();
 
             accountRepository.save(admin);
@@ -35,6 +36,7 @@ public class DataInitializer {
                     .password(passwordEncoder.encode("dealer123"))
                     .email("dealer@example.com")
                     .role(Role.DEALER)
+                    .isActive(true)
                     .build();
 
             accountRepository.save(dealer);

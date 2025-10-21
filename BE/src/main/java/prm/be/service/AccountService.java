@@ -1,14 +1,15 @@
 package prm.be.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import prm.be.entity.Account;
 import prm.be.entity.AccountDetails;
 import prm.be.enums.Role;
 import prm.be.exception.NotFoundException;
+import prm.be.exception.UnauthorizedException;
 import prm.be.repository.AccountRepository;
 import prm.be.dto.request.RegisterRequestDTO;
 import prm.be.dto.request.AccountUpdateRequestDTO;
@@ -18,31 +19,48 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AccountService {
     private final AccountRepository accountRepository;
-    private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
 
 
     public Account registerByGuest(RegisterRequestDTO request) {
+        if (accountRepository.existsByUsername(request.getUsername())) {
+            throw new UnauthorizedException("Username already exists");
+        }
+        if (accountRepository.existsByEmail(request.getEmail())) {
+            throw new UnauthorizedException("Email already exists");
+        }
+
         Account toSave = Account.builder()
                 .username(request.getUsername())
-                .password(passwordEncoder.encode(request.getPassword()))
+                .password(request.getPassword())
                 .email(request.getEmail())
-                .role(Role.DEALER)
+                .role(null)
                 .isActive(false)
                 .build();
+
         return accountRepository.save(toSave);
     }
 
+
     public Account createDealerByAdmin(RegisterRequestDTO request) {
+        if (accountRepository.existsByUsername(request.getUsername())) {
+            throw new UnauthorizedException("Username already exists");
+        }
+        if (accountRepository.existsByEmail(request.getEmail())) {
+            throw new UnauthorizedException("Email already exists");
+        }
+
         Account toSave = Account.builder()
                 .username(request.getUsername())
-                .password(passwordEncoder.encode(request.getPassword()))
+                .password(request.getPassword())
                 .email(request.getEmail())
                 .role(Role.DEALER)
                 .isActive(true)
                 .build();
+
         return accountRepository.save(toSave);
     }
+
 
     public List<Account> getAll() {
         return accountRepository.findAll();
@@ -60,6 +78,7 @@ public class AccountService {
         return findAccountByUsername(username);
     }
 
+    @Transactional
     public Account updateAccountById(AccountUpdateRequestDTO request) {
         Account toUpdate = findAccountById(request.getId());
 
@@ -68,18 +87,36 @@ public class AccountService {
             toUpdate.setDetails(updatedDetails);
         }
 
+        if (StringUtils.hasText(request.getUsername()) &&
+                !request.getUsername().equals(toUpdate.getUsername()) &&
+                accountRepository.existsByUsername(request.getUsername())) {
+            throw new UnauthorizedException("Username already exists");
+        }
+
+        if (StringUtils.hasText(request.getEmail()) &&
+                !request.getEmail().equals(toUpdate.getEmail()) &&
+                accountRepository.existsByEmail(request.getEmail())) {
+            throw new UnauthorizedException("Email already exists");
+        }
+
         modelMapper.map(request, toUpdate);
 
         if (StringUtils.hasText(request.getPassword())) {
-            toUpdate.setPassword(passwordEncoder.encode(request.getPassword()));
+            toUpdate.setPassword(request.getPassword());
         }
 
         return accountRepository.save(toUpdate);
     }
 
+
     public void deleteAccountById(String id) {
-        accountRepository.deleteById(id);
+        Account account = findAccountById(id);
+        if (account.getRole() == Role.ADMIN) {
+            throw new UnauthorizedException("Cannot delete admin account");
+        }
+        accountRepository.delete(account);
     }
+
 
     protected Account findAccountById(String id) {
         return accountRepository.findById(id)
@@ -103,4 +140,16 @@ public class AccountService {
         modelMapper.map(request, toUpdate);
         return toUpdate;
     }
+
+    public void setAccountActive(String email, boolean active) {
+        Account account = findAccountByEmail(email);
+
+        if (account.getRole() == Role.ADMIN) {
+            throw new UnauthorizedException("Cannot change status of admin account");
+        }
+
+        account.setActive(active);
+        accountRepository.save(account);
+    }
+
 }

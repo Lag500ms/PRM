@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class AccountRequestDTO {
+public class AccountResponseDTO {
     private String id;
     private String username;
     private String email;

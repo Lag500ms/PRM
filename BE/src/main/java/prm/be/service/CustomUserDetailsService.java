@@ -20,11 +20,11 @@ public class CustomUserDetailsService implements UserDetailsService {
         Account account = accountRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Account not found with username: " + username));
 
-        // Chuyển Account thành UserDetails của Spring
         return org.springframework.security.core.userdetails.User.builder()
                 .username(account.getUsername())
                 .password(account.getPassword())
-                .roles(account.getRole().name()) // dùng role trong entity Account
+                .roles(account.getRole().name())
+                .disabled(!account.isActive())
                 .build();
     }
 }

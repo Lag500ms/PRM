@@ -11,7 +11,10 @@ import prm.be.dto.request.AccountUpdateRequestDTO;
 import prm.be.dto.response.AccountResponseDTO;
 import prm.be.entity.Account;
 import prm.be.service.AccountService;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/accounts")
@@ -22,17 +25,16 @@ public class AccountController {
     private final ModelMapper modelMapper;
 
     @PostMapping("/register")
-    public ResponseEntity<AccountResponseDTO> register(@Valid @RequestBody RegisterRequestDTO request) {
-        Account saved = accountService.registerByGuest(request);
-        return ResponseEntity.ok(modelMapper.map(saved, AccountResponseDTO.class));
+    public void register(@Valid @RequestBody RegisterRequestDTO request) {
+        accountService.registerByGuest(request);
     }
 
     @PostMapping("/save")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<AccountResponseDTO> saveByAdmin(@Valid @RequestBody RegisterRequestDTO request) {
-        Account saved = accountService.createDealerByAdmin(request);
-        return ResponseEntity.ok(modelMapper.map(saved, AccountResponseDTO.class));
+    public void saveByAdmin(@Valid @RequestBody RegisterRequestDTO request) {
+        accountService.createDealerByAdmin(request);
     }
+
 
     @GetMapping("/getAll")
     @PreAuthorize("hasRole('ADMIN')")
@@ -76,4 +78,18 @@ public class AccountController {
         accountService.deleteAccountById(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/account/status")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, String>> changeAccountStatus(
+            @RequestParam String email,
+            @RequestParam boolean active) {
+
+        accountService.setAccountActive(email, active);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("message", active ? "Account activated" : "Account deactivated");
+        return ResponseEntity.ok(response);
+    }
+
 }
