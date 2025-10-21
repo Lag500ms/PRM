@@ -8,6 +8,7 @@ import prm.be.dto.request.inventory.InventoryRequests.UpdateVehicleQuantityReque
 import prm.be.dto.response.inventory.InventoryResponses.InventoryResponse;
 import prm.be.dto.response.inventory.InventoryResponses.VehicleItem;
 import prm.be.entity.*;
+import prm.be.exception.NotFoundException;
 import prm.be.repository.*;
 
 import java.util.List;

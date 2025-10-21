@@ -35,7 +35,6 @@ public class AccountController {
         accountService.createDealerByAdmin(request);
     }
 
-
     @GetMapping("/getAll")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<AccountResponseDTO>> getAll() {
