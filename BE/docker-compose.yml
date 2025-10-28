@@ -1,0 +1,29 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:15
+    container_name: be_postgres
+    environment:
+      POSTGRES_DB: BE
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  be:
+    build: .
+    container_name: be_app
+    ports:
+      - "8080:8080"
+    environment:
+      POSTGRES_URL: jdbc:postgresql://postgres:5432/BE
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+    depends_on:
+      - postgres
+
+volumes:
+  pgdata:
