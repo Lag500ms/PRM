@@ -48,11 +48,11 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(LoginResponse response) {
                     String role = response.getRole();
-                    SharedPrefManager.getInstance(LoginActivity.this)
-                            .saveUser(response.getToken(), response.getUsername(), role);
-                    Toast.makeText(LoginActivity.this, "Login success as " + role, Toast.LENGTH_SHORT).show();
-                    navigateByRole(role);
-                    finish();
+                    String token = response.getToken();
+                    String username = response.getUsername();
+                    
+                    // Fetch account ID then navigate
+                    fetchAccountIdThenNavigate(token, username, role);
                 }
 
                 @Override
@@ -60,6 +60,55 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this, "Login failed: " + error, Toast.LENGTH_SHORT).show();
                 }
             });
+        });
+    }
+
+    private void fetchAccountIdThenNavigate(String token, String username, String role) {
+        // Save token first to use in authenticated API call
+        SharedPrefManager.getInstance(this).saveUser(token, username, role);
+        
+        android.util.Log.d("LoginActivity", "Fetching account ID for username: " + username);
+        
+        // Fetch account ID
+        com.example.myapplication.network.AccountApiService accountApi = 
+            com.example.myapplication.network.RetrofitClient.createWithAuth(this, 
+                com.example.myapplication.network.AccountApiService.class);
+        
+        accountApi.getByUsername(username).enqueue(new retrofit2.Callback<com.example.myapplication.model.account.response.AccountResponseDTO>() {
+            @Override
+            public void onResponse(retrofit2.Call<com.example.myapplication.model.account.response.AccountResponseDTO> call, 
+                                 retrofit2.Response<com.example.myapplication.model.account.response.AccountResponseDTO> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    String accountId = response.body().getId();
+                    android.util.Log.d("LoginActivity", "Account ID fetched: " + accountId);
+                    // Save account ID
+                    SharedPrefManager.getInstance(LoginActivity.this).saveUserId(accountId);
+                    Toast.makeText(LoginActivity.this, "Login success as " + role, Toast.LENGTH_SHORT).show();
+                    navigateByRole(role);
+                    finish();
+                } else {
+                    // Log error
+                    android.util.Log.e("LoginActivity", "Failed to fetch account ID: " + response.code());
+                    try {
+                        if (response.errorBody() != null) {
+                            android.util.Log.e("LoginActivity", "Error body: " + response.errorBody().string());
+                        }
+                    } catch (Exception e) {
+                        android.util.Log.e("LoginActivity", "Error reading error body", e);
+                    }
+                    Toast.makeText(LoginActivity.this, "Login success (ID not fetched - code " + response.code() + ")", Toast.LENGTH_LONG).show();
+                    navigateByRole(role);
+                    finish();
+                }
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<com.example.myapplication.model.account.response.AccountResponseDTO> call, Throwable t) {
+                android.util.Log.e("LoginActivity", "Network error fetching account ID", t);
+                Toast.makeText(LoginActivity.this, "Login success (network error: " + t.getMessage() + ")", Toast.LENGTH_LONG).show();
+                navigateByRole(role);
+                finish();
+            }
         });
     }
 

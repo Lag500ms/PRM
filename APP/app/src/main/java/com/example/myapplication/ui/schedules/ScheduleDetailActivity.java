@@ -63,6 +63,38 @@ public class ScheduleDetailActivity extends AppCompatActivity {
         btnDelete.setOnClickListener(v -> delete());
         btnApprove.setOnClickListener(v -> updateStatus("CONFIRMED"));
         btnCancel.setOnClickListener(v -> updateStatus("CANCELLED"));
+
+        findViewById(R.id.btnEdit).setOnClickListener(v -> editSchedule());
+        findViewById(R.id.btnDelete).setOnClickListener(v -> deleteSchedule());
+    }
+
+    private void editSchedule() {
+        Intent intent = new Intent(this, ScheduleFormActivity.class);
+        intent.putExtra("schedule_id", scheduleId);
+        startActivity(intent);
+        finish();
+    }
+
+    private void deleteSchedule() {
+        new android.app.AlertDialog.Builder(this)
+                .setTitle("Delete Schedule")
+                .setMessage("Are you sure you want to delete this schedule?")
+                .setPositiveButton("Delete", (dialog, which) -> {
+                    schedulesRepository.delete(scheduleId, new SchedulesRepository.DeleteCallback() {
+                        @Override
+                        public void onSuccess() {
+                            Toast.makeText(ScheduleDetailActivity.this, "Schedule deleted", Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+
+                        @Override
+                        public void onError(String errorMessage) {
+                            Toast.makeText(ScheduleDetailActivity.this, "Error: " + errorMessage, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 
     @Override

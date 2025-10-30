@@ -64,6 +64,38 @@ public class OrderDetailActivity extends AppCompatActivity {
         btnDelete.setOnClickListener(v -> delete());
         btnApprove.setOnClickListener(v -> updateStatus("CONFIRMED"));
         btnCancel.setOnClickListener(v -> updateStatus("CANCELLED"));
+
+        findViewById(R.id.btnEdit).setOnClickListener(v -> editOrder());
+        findViewById(R.id.btnDelete).setOnClickListener(v -> deleteOrder());
+    }
+
+    private void editOrder() {
+        Intent intent = new Intent(this, OrderFormActivity.class);
+        intent.putExtra("order_id", orderId);
+        startActivity(intent);
+        finish();
+    }
+
+    private void deleteOrder() {
+        new android.app.AlertDialog.Builder(this)
+                .setTitle("Delete Order")
+                .setMessage("Are you sure you want to delete this order?")
+                .setPositiveButton("Delete", (dialog, which) -> {
+                    ordersRepository.delete(orderId, new OrdersRepository.DeleteCallback() {
+                        @Override
+                        public void onSuccess() {
+                            Toast.makeText(OrderDetailActivity.this, "Order deleted", Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+
+                        @Override
+                        public void onError(String errorMessage) {
+                            Toast.makeText(OrderDetailActivity.this, "Error: " + errorMessage, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 
     @Override

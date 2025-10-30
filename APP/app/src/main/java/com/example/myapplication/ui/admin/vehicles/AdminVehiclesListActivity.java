@@ -63,19 +63,52 @@ public class AdminVehiclesListActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView() {
-        adapter = new VehiclesAdapter(this, vehicles, vehicle -> {
-            Intent intent = new Intent(this, AdminVehicleFormActivity.class);
-            intent.putExtra("vehicle_id", vehicle.getId());
-            startActivity(intent);
-        }, this::deleteVehicle);
+        // Load categories first to get names
+        loadCategoriesCache();
+        
+        adapter = new VehiclesAdapter(this, vehicles, 
+            vehicle -> {
+                Intent intent = new Intent(this, AdminVehicleFormActivity.class);
+                intent.putExtra("vehicle_id", vehicle.getId());
+                startActivity(intent);
+            },
+            vehicle -> deleteVehicle(vehicle));
         rvVehicles.setLayoutManager(new LinearLayoutManager(this));
         rvVehicles.setAdapter(adapter);
+    }
+
+    private void loadCategoriesCache() {
+        com.example.myapplication.network.CategoryApiService categoryApi = 
+            com.example.myapplication.network.RetrofitClient.createWithAuth(this, 
+                com.example.myapplication.network.CategoryApiService.class);
+        
+        categoryApi.getAllCategories().enqueue(new retrofit2.Callback<java.util.List<com.example.myapplication.model.category.CategoryResponseDTO>>() {
+            @Override
+            public void onResponse(retrofit2.Call<java.util.List<com.example.myapplication.model.category.CategoryResponseDTO>> call, 
+                                 retrofit2.Response<java.util.List<com.example.myapplication.model.category.CategoryResponseDTO>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Cache categories
+                    for (com.example.myapplication.model.category.CategoryResponseDTO cat : response.body()) {
+                        VehiclesAdapter.categoryCache.put(cat.getId(), cat.getName());
+                    }
+                    // Refresh adapter to show category names
+                    if (adapter != null) {
+                        adapter.notifyDataSetChanged();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<java.util.List<com.example.myapplication.model.category.CategoryResponseDTO>> call, Throwable t) {
+                android.util.Log.e("AdminVehiclesList", "Failed to load categories", t);
+            }
+        });
     }
 
     private void deleteVehicle(VehicleResponseDTO vehicle) {
         new android.app.AlertDialog.Builder(this)
                 .setTitle("Delete Vehicle")
-                .setMessage("Delete " + vehicle.getModel() + "?")
+                .setMessage("Are you sure you want to delete " + vehicle.getModel() + "?")
                 .setPositiveButton("Delete", (dialog, which) -> {
                     progressBar.setVisibility(View.VISIBLE);
                     vehicleRepository.delete(vehicle.getId(), new VehicleRepository.RepositoryCallback<Void>() {

@@ -19,13 +19,16 @@ public class VehiclesAdapter extends RecyclerView.Adapter<VehiclesAdapter.ViewHo
     private final List<VehicleResponseDTO> vehicles;
     private final OnVehicleClickListener listener;
     private final OnVehicleDeleteListener deleteListener;
+    
+    // Cache for category names
+    public static final java.util.Map<String, String> categoryCache = new java.util.HashMap<>();
 
     public interface OnVehicleClickListener {
         void onVehicleClick(VehicleResponseDTO vehicle);
     }
 
     public interface OnVehicleDeleteListener {
-        void onDelete(VehicleResponseDTO vehicle);
+        void onVehicleDelete(VehicleResponseDTO vehicle);
     }
 
     public VehiclesAdapter(Context context, List<VehicleResponseDTO> vehicles, OnVehicleClickListener listener, OnVehicleDeleteListener deleteListener) {
@@ -70,7 +73,10 @@ public class VehiclesAdapter extends RecyclerView.Adapter<VehiclesAdapter.ViewHo
             tvModel.setText(vehicle.getModel() != null ? vehicle.getModel() : "N/A");
             tvVersion.setText(vehicle.getVersion() != null ? vehicle.getVersion() : "N/A");
             tvColor.setText(vehicle.getColor() != null ? vehicle.getColor() : "N/A");
-            tvCategory.setText("Loading..."); // Will be loaded separately
+            
+            // Get category name from cache
+            String categoryName = categoryCache.get(vehicle.getCategoryId());
+            tvCategory.setText(categoryName != null ? categoryName : "Unknown");
             
             NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.US);
             tvPrice.setText(formatter.format(vehicle.getPrice()));
@@ -85,7 +91,7 @@ public class VehiclesAdapter extends RecyclerView.Adapter<VehiclesAdapter.ViewHo
 
             itemView.setOnLongClickListener(v -> {
                 if (deleteListener != null) {
-                    deleteListener.onDelete(vehicle);
+                    deleteListener.onVehicleDelete(vehicle);
                 }
                 return true;
             });

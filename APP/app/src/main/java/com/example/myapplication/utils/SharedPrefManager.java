@@ -64,6 +64,10 @@ public class SharedPrefManager {
         return prefs.getString(KEY_USER_ID, null);
     }
 
+    public void saveUserId(String userId) {
+        prefs.edit().putString(KEY_USER_ID, userId).apply();
+    }
+
     // 🔹 Kiểm tra đã đăng nhập chưa
     public boolean isLoggedIn() {
         return getToken() != null;

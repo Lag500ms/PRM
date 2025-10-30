@@ -34,8 +34,8 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.VH
     @NonNull
     @Override
     public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_category, parent, false);
-        return new VH(v);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_category, parent, false);
+        return new VH(view);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.VH
         TextView tvCategoryName;
         MaterialButton btnEdit, btnDelete;
 
-        public VH(@NonNull View itemView) {
+        VH(View itemView) {
             super(itemView);
             tvCategoryName = itemView.findViewById(R.id.tvCategoryName);
             btnEdit = itemView.findViewById(R.id.btnEdit);
@@ -73,5 +73,4 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.VH
         }
     }
 }
-
 

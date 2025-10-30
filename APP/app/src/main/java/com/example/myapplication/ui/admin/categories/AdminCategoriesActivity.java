@@ -2,7 +2,6 @@ package com.example.myapplication.ui.admin.categories;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -11,12 +10,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.R;
-import com.example.myapplication.model.category.CategoryRequestDTO;
 import com.example.myapplication.model.category.CategoryResponseDTO;
 import com.example.myapplication.network.CategoryApiService;
 import com.example.myapplication.network.RetrofitClient;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.TextInputEditText;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -52,11 +51,11 @@ public class AdminCategoriesActivity extends AppCompatActivity {
         tvEmpty = findViewById(R.id.tvEmpty);
         fabAdd = findViewById(R.id.fabAdd);
 
-        adapter = new CategoriesAdapter(categories, this::editCategory, this::deleteCategory);
+        adapter = new CategoriesAdapter(categories, this::showEditDialog, this::deleteCategory);
         rvCategories.setLayoutManager(new LinearLayoutManager(this));
         rvCategories.setAdapter(adapter);
 
-        fabAdd.setOnClickListener(v -> showAddDialog());
+        fabAdd.setOnClickListener(v -> showCreateDialog());
 
         loadCategories();
     }
@@ -73,36 +72,51 @@ public class AdminCategoriesActivity extends AppCompatActivity {
                     categories.clear();
                     categories.addAll(response.body());
                     adapter.notifyDataSetChanged();
+                    
                     if (categories.isEmpty()) {
                         tvEmpty.setVisibility(View.VISIBLE);
                     }
-                } else {
-                    Toast.makeText(AdminCategoriesActivity.this, "Failed to load", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<CategoryResponseDTO>> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
+                tvEmpty.setVisibility(View.VISIBLE);
                 Toast.makeText(AdminCategoriesActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void showAddDialog() {
-        EditText etName = new EditText(this);
-        etName.setHint("Category Name");
-        etName.setPadding(50, 30, 50, 30);
+    private void showCreateDialog() {
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_category_form, null);
+        TextInputEditText etName = dialogView.findViewById(R.id.etCategoryName);
 
         new AlertDialog.Builder(this)
-                .setTitle("Add Category")
-                .setView(etName)
-                .setPositiveButton("Add", (dialog, which) -> {
-                    String name = etName.getText().toString().trim();
+                .setTitle("Create Category")
+                .setView(dialogView)
+                .setPositiveButton("Create", (dialog, which) -> {
+                    String name = etName.getText() != null ? etName.getText().toString().trim() : "";
                     if (!name.isEmpty()) {
                         createCategory(name);
-                    } else {
-                        Toast.makeText(this, "Name cannot be empty", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void showEditDialog(CategoryResponseDTO category) {
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_category_form, null);
+        TextInputEditText etName = dialogView.findViewById(R.id.etCategoryName);
+        etName.setText(category.getName());
+
+        new AlertDialog.Builder(this)
+                .setTitle("Edit Category")
+                .setView(dialogView)
+                .setPositiveButton("Update", (dialog, which) -> {
+                    String name = etName.getText() != null ? etName.getText().toString().trim() : "";
+                    if (!name.isEmpty()) {
+                        updateCategory(category.getId(), name);
                     }
                 })
                 .setNegativeButton("Cancel", null)
@@ -110,10 +124,10 @@ public class AdminCategoriesActivity extends AppCompatActivity {
     }
 
     private void createCategory(String name) {
-        CategoryRequestDTO request = new CategoryRequestDTO();
+        progressBar.setVisibility(View.VISIBLE);
+        com.example.myapplication.model.category.CategoryRequestDTO request = new com.example.myapplication.model.category.CategoryRequestDTO();
         request.setName(name);
 
-        progressBar.setVisibility(View.VISIBLE);
         categoryApiService.createCategory(request).enqueue(new Callback<CategoryResponseDTO>() {
             @Override
             public void onResponse(Call<CategoryResponseDTO> call, Response<CategoryResponseDTO> response) {
@@ -134,31 +148,11 @@ public class AdminCategoriesActivity extends AppCompatActivity {
         });
     }
 
-    private void editCategory(CategoryResponseDTO category) {
-        EditText etName = new EditText(this);
-        etName.setText(category.getName());
-        etName.setPadding(50, 30, 50, 30);
-
-        new AlertDialog.Builder(this)
-                .setTitle("Edit Category")
-                .setView(etName)
-                .setPositiveButton("Update", (dialog, which) -> {
-                    String name = etName.getText().toString().trim();
-                    if (!name.isEmpty()) {
-                        updateCategory(category.getId(), name);
-                    } else {
-                        Toast.makeText(this, "Name cannot be empty", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .setNegativeButton("Cancel", null)
-                .show();
-    }
-
     private void updateCategory(String id, String name) {
-        CategoryRequestDTO request = new CategoryRequestDTO();
+        progressBar.setVisibility(View.VISIBLE);
+        com.example.myapplication.model.category.CategoryRequestDTO request = new com.example.myapplication.model.category.CategoryRequestDTO();
         request.setName(name);
 
-        progressBar.setVisibility(View.VISIBLE);
         categoryApiService.updateCategory(id, request).enqueue(new Callback<CategoryResponseDTO>() {
             @Override
             public void onResponse(Call<CategoryResponseDTO> call, Response<CategoryResponseDTO> response) {
@@ -182,7 +176,7 @@ public class AdminCategoriesActivity extends AppCompatActivity {
     private void deleteCategory(CategoryResponseDTO category) {
         new AlertDialog.Builder(this)
                 .setTitle("Delete Category")
-                .setMessage("Delete " + category.getName() + "?")
+                .setMessage("Are you sure you want to delete " + category.getName() + "?")
                 .setPositiveButton("Delete", (dialog, which) -> {
                     progressBar.setVisibility(View.VISIBLE);
                     categoryApiService.deleteCategory(category.getId()).enqueue(new Callback<Void>() {
@@ -208,5 +202,4 @@ public class AdminCategoriesActivity extends AppCompatActivity {
                 .show();
     }
 }
-
 

@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.repository.AuthRepository;
 import com.example.myapplication.ui.admin.AdminAccountsListActivity;
+import com.example.myapplication.ui.admin.categories.AdminCategoriesActivity;
 import com.example.myapplication.ui.admin.vehicles.AdminVehiclesListActivity;
 import com.example.myapplication.ui.chatbot.ChatbotActivity;
 import com.example.myapplication.utils.SharedPrefManager;
@@ -34,7 +35,7 @@ public class DashboardAdminActivity extends AppCompatActivity {
 
         // Categories button
         findViewById(R.id.btnCategories).setOnClickListener(v -> {
-            startActivity(new Intent(this, com.example.myapplication.ui.admin.categories.AdminCategoriesActivity.class));
+            startActivity(new Intent(this, AdminCategoriesActivity.class));
         });
 
         // Accounts button

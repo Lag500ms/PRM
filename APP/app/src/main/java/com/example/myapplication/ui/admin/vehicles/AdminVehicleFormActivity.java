@@ -160,8 +160,16 @@ public class AdminVehicleFormActivity extends AppCompatActivity {
         request.setQuantity(quantity);
         request.setImage(image.isEmpty() ? null : image);
         request.setCategoryId(categoryId);
-        // Use username as accountId since userId is not available in login response
-        request.setAccountId(SharedPrefManager.getInstance(this).getUsername());
+        // Set account ID from session (real ID, not username)
+        String accountId = SharedPrefManager.getInstance(this).getUserId();
+        android.util.Log.d("AdminVehicleForm", "Account ID from SharedPref: " + accountId);
+        android.util.Log.d("AdminVehicleForm", "Username from SharedPref: " + SharedPrefManager.getInstance(this).getUsername());
+        
+        if (accountId == null || accountId.isEmpty()) {
+            Toast.makeText(this, "Account ID not found. Please logout and login again.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        request.setAccountId(accountId);
 
         if (vehicleId == null) {
             vehicleRepository.create(request, new VehicleRepository.RepositoryCallback<VehicleResponseDTO>() {
