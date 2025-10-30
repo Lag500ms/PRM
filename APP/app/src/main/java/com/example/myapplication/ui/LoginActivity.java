@@ -2,81 +2,76 @@ package com.example.myapplication.ui;
 
 
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.Intent;
+import android.widget.Toast;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication.R;
+import com.example.myapplication.model.account.response.LoginResponse;
 import com.example.myapplication.repository.AuthRepository;
+import com.example.myapplication.utils.SharedPrefManager;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
 
 public class LoginActivity extends AppCompatActivity {
 
     private AuthRepository authRepository;
-    private SharedPreferences sharedPreferences;
-    private static final String PREF_NAME = "MyAppPrefs";
-    private static final String TOKEN_KEY = "token";
-    private static final String USERNAME_KEY = "username";
-    private static final String ROLE_KEY = "role";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.signup);
+        setContentView(R.layout.login);
 
         authRepository = new AuthRepository();
-        sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        TextInputEditText etEmail = findViewById(R.id.etEmail);
+        TextInputEditText etPassword = findViewById(R.id.etPassword);
+        MaterialButton btnSignIn = findViewById(R.id.btnSignIn);
 
-//        EditText etUsername = findViewById(R.id.etUsername);
-//        EditText etPassword = findViewById(R.id.etPassword);
-//        Button btnLogin = findViewById(R.id.btnLogin);
+        // Auto redirect if already logged in
+        if (SharedPrefManager.getInstance(this).isLoggedIn()) {
+            navigateByRole(SharedPrefManager.getInstance(this).getRole());
+            finish();
+            return;
+        }
 
-//        btnLogin.setOnClickListener(v -> {
-//            String username = etUsername.getText().toString();
-//            String password = etPassword.getText().toString();
-//
-//            authRepository.login(username, password, new AuthRepository.LoginCallback() {
-//                @Override
-//                public void onSuccess(LoginResponse response) {
-//                    // Lưu token, username, role vào SharedPreferences
-//                    sharedPreferences.edit()
-//                            .putString(TOKEN_KEY, response.getToken())
-//                            .putString(USERNAME_KEY, response.getUsername())
-//                            .putString(ROLE_KEY, response.getRole())
-//                            .apply();
-//
-//                    Toast.makeText(LoginActivity.this,
-//                            "Login success! Data saved.",
-//                            Toast.LENGTH_LONG).show();
-//
-//                    // TODO: chuyển sang màn hình khác
-//                    // startActivity(new Intent(LoginActivity.this, DashboardActivity.class));
-//                    // finish();
-//                }
-//
-//                @Override
-//                public void onError(String error) {
-//                    Toast.makeText(LoginActivity.this,
-//                            "Login failed: " + error,
-//                            Toast.LENGTH_SHORT).show();
-//                }
-//            });
-//        });
+        btnSignIn.setOnClickListener(v -> {
+            String username = etEmail.getText() != null ? etEmail.getText().toString().trim() : "";
+            String password = etPassword.getText() != null ? etPassword.getText().toString() : "";
+            if (username.isEmpty() || password.isEmpty()) {
+                Toast.makeText(LoginActivity.this, "Please enter username and password", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            authRepository.login(username, password, new AuthRepository.LoginCallback() {
+                @Override
+                public void onSuccess(LoginResponse response) {
+                    String role = response.getRole();
+                    SharedPrefManager.getInstance(LoginActivity.this)
+                            .saveUser(response.getToken(), response.getUsername(), role);
+                    Toast.makeText(LoginActivity.this, "Login success as " + role, Toast.LENGTH_SHORT).show();
+                    navigateByRole(role);
+                    finish();
+                }
+
+                @Override
+                public void onError(String error) {
+                    Toast.makeText(LoginActivity.this, "Login failed: " + error, Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
     }
 
-    // Hàm tiện lợi lấy token/username/role ở các Activity khác
-    public static String getToken(Context context) {
-        return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-                .getString(TOKEN_KEY, null);
-    }
-
-    public static String getUsername(Context context) {
-        return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-                .getString(USERNAME_KEY, null);
-    }
-
-    public static String getRole(Context context) {
-        return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-                .getString(ROLE_KEY, null);
+    private void navigateByRole(String role) {
+        if (role == null) {
+            return;
+        }
+        // BE returns "ROLE_ADMIN" or "ROLE_DEALER" from Spring Security
+        if ("ROLE_ADMIN".equalsIgnoreCase(role) || "ADMIN".equalsIgnoreCase(role)) {
+            startActivity(new Intent(this, DashboardAdminActivity.class));
+        } else {
+            startActivity(new Intent(this, DashboardDealerActivity.class));
+        }
     }
 }

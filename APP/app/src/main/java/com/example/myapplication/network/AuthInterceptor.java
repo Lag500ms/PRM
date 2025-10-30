@@ -32,20 +32,29 @@ public class AuthInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request original = chain.request();
+        android.util.Log.d("AuthInterceptor", "Request URL: " + original.url());
+        
         // Skip adding auth header for login calls
         if (original.url().encodedPath().contains("/v1/auth/login")
                 || original.url().encodedPath().contains("/v1/accounts/register")) {
+            android.util.Log.d("AuthInterceptor", "Skipping auth for login/register");
             return chain.proceed(original);
         }
 
         SharedPreferences sp = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         String token = sp.getString(TOKEN_KEY, null);
+        android.util.Log.d("AuthInterceptor", "Token: " + (token != null ? "EXISTS (length=" + token.length() + ")" : "NULL"));
+        
         if (token == null || token.isEmpty()) {
+            android.util.Log.w("AuthInterceptor", "No token found, proceeding without auth");
             return chain.proceed(original);
         }
         Request authed = original.newBuilder()
                 .addHeader("Authorization", "Bearer " + token)
                 .build();
-        return chain.proceed(authed);
+        android.util.Log.d("AuthInterceptor", "Added Authorization header");
+        Response response = chain.proceed(authed);
+        android.util.Log.d("AuthInterceptor", "Response code: " + response.code());
+        return response;
     }
 }

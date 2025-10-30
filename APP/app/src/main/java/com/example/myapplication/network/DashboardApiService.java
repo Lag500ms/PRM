@@ -7,5 +7,5 @@ import retrofit2.http.GET;
 public interface DashboardApiService {
 
     @GET("v1/dealer/dashboard")
-    Call<DashboardResponse> getDashboard();
+    Call<DashboardResponse> getDealerDashboard();
 }
