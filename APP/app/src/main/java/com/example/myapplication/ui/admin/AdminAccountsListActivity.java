@@ -58,8 +58,16 @@ public class AdminAccountsListActivity extends AppCompatActivity {
         rvAccounts.setLayoutManager(new LinearLayoutManager(this));
         rvAccounts.setAdapter(adapter);
 
-        fabAdd.setOnClickListener(v -> startActivity(new Intent(this, AdminCreateAccountActivity.class)));
+        fabAdd.setOnClickListener(v -> 
+            startActivity(new Intent(this, AdminCreateAccountActivity.class)));
 
+        load();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Reload danh sách khi quay lại màn hình (sau khi tạo account mới)
         load();
     }
 
@@ -71,7 +79,14 @@ public class AdminAccountsListActivity extends AppCompatActivity {
             public void onSuccess(List<AccountResponseDTO> list) {
                 progressBar.setVisibility(View.GONE);
                 accounts.clear();
-                if (list != null) accounts.addAll(list);
+                if (list != null) {
+                    // Debug log để kiểm tra dữ liệu từ BE
+                    for (AccountResponseDTO acc : list) {
+                        android.util.Log.d("AdminAccounts", "Account: " + acc.getUsername() + 
+                            " - isActive: " + acc.isActive() + " (raw field: " + acc.isActive() + ")");
+                    }
+                    accounts.addAll(list);
+                }
                 adapter.notifyDataSetChanged();
                 if (accounts.isEmpty()) tvEmpty.setVisibility(View.VISIBLE);
             }
@@ -189,13 +204,13 @@ class AccountsAdapter extends RecyclerView.Adapter<AccountsAdapter.VH> {
                 public void onResponse(Call<Map<String, String>> call, Response<Map<String, String>> response) {
                     h.btnToggleStatus.setEnabled(true);
                     if (response.isSuccessful()) {
-                        // Update data
-                        account.setActive(newStatus);
-                        // Update UI immediately
-                        updateStatusUI(h, account);
                         android.widget.Toast.makeText(v.getContext(), 
                             newStatus ? "Account activated" : "Account deactivated", 
                             android.widget.Toast.LENGTH_SHORT).show();
+                        // Reload danh sách để lấy dữ liệu mới nhất từ BE
+                        if (onDataChanged != null) {
+                            onDataChanged.run();
+                        }
                     } else {
                         // Parse error message from response
                         String errorMsg = "Failed to change status";
