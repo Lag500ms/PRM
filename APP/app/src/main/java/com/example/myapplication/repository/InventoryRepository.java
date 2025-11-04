@@ -2,6 +2,7 @@ package com.example.myapplication.repository;
 
 import android.content.Context;
 import com.example.myapplication.model.inventory.CreateInventoryRequest;
+import com.example.myapplication.model.inventory.ReturnVehicleToAdminRequest;
 import com.example.myapplication.model.inventory.UpdateVehicleQuantityRequest;
 import com.example.myapplication.network.InventoryApiService;
 import com.example.myapplication.network.RetrofitClient;
@@ -31,8 +32,18 @@ public class InventoryRepository {
         return api.createInventory(request).execute().body();
     }
 
+    /**
+     * Nhận xe từ kho Admin vào dealer inventory
+     */
     public InventoryResponse updateQuantity(UpdateVehicleQuantityRequest request) throws IOException {
         return api.updateQuantity(request).execute().body();
+    }
+
+    /**
+     * Trả xe về kho Admin từ dealer inventory
+     */
+    public InventoryResponse returnVehicleToAdmin(ReturnVehicleToAdminRequest request) throws IOException {
+        return api.returnVehicleToAdmin(request).execute().body();
     }
 
     public boolean deleteInventory(String id) throws IOException {
