@@ -64,7 +64,7 @@
             android:name=".ui.schedules.ScheduleDetailActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.inventory.InventoryActivity"
+            android:name=".ui.InventoryActivity"
             android:exported="false" />
         <activity
             android:name=".ui.inventory.InventoryReceiveActivity"

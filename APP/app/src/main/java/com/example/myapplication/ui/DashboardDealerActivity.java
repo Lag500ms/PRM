@@ -16,7 +16,7 @@ import com.example.myapplication.network.DashboardApiService;
 import com.example.myapplication.network.RetrofitClient;
 import com.example.myapplication.repository.AuthRepository;
 import com.example.myapplication.ui.chatbot.ChatbotActivity;
-import com.example.myapplication.ui.inventory.InventoryActivity;
+import com.example.myapplication.ui.InventoryActivity;
 import com.example.myapplication.ui.orders.OrdersListActivity;
 import com.example.myapplication.ui.schedules.SchedulesListActivity;
 import com.example.myapplication.utils.SharedPrefManager;
@@ -110,5 +110,3 @@ public class DashboardDealerActivity extends AppCompatActivity {
         });
     }
 }
-
-

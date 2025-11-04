@@ -125,10 +125,12 @@ public class InventoryReceiveActivity extends AppCompatActivity {
             public void onError(String error) {
                 progressBar.setVisibility(View.GONE);
                 btnReceive.setEnabled(true);
-                Toast.makeText(InventoryReceiveActivity.this, "Error: " + error, Toast.LENGTH_LONG).show();
+                if (error != null && error.toLowerCase().contains("insufficient quantity")) {
+                    Toast.makeText(InventoryReceiveActivity.this, "Không đủ số lượng", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(InventoryReceiveActivity.this, "Error: " + error, Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
 }
-
-
