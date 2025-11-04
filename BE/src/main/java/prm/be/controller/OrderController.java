@@ -26,9 +26,9 @@ public class OrderController {
     @GetMapping
     @PreAuthorize("hasRole('DEALER')")
     public ResponseEntity<Page<OrderResponse>> list(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String status) {
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "status", required = false) String status) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Account acc = accountService.getAccountByUsername(username);
         if (status != null && !status.isBlank()) {
