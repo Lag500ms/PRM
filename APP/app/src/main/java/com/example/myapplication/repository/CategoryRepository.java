@@ -1,8 +1,8 @@
 package com.example.myapplication.repository;
 
 
-import com.example.myapplication.model.category.request.CategoryRequestDTO;
-import com.example.myapplication.model.category.response.CategoryResponseDTO;
+import com.example.myapplication.model.category.CategoryRequestDTO;
+import com.example.myapplication.model.category.CategoryResponseDTO;
 import com.example.myapplication.network.CategoryApiService;
 
 import java.util.List;

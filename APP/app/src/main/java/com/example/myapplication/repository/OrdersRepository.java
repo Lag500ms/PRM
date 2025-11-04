@@ -8,8 +8,8 @@ import com.example.myapplication.model.orders.UpdateStatusRequest;
 import com.example.myapplication.model.orders.OrderResponse;
 import com.example.myapplication.network.OrdersApiService;
 import com.example.myapplication.network.RetrofitClient;
-import java.io.IOException;
-import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 public class OrdersRepository {
@@ -20,28 +20,136 @@ public class OrdersRepository {
         this.api = RetrofitClient.createWithAuth(context, OrdersApiService.class);
     }
 
-    public PageResponse<OrderResponse> list(int page, int size, String status) throws IOException {
-        return api.listOrders(page, size, status).execute().body();
+    public void list(int page, int size, String status, OrdersListCallback callback) {
+        api.listOrders(page, size, status).enqueue(new Callback<PageResponse<OrderResponse>>() {
+            @Override
+            public void onResponse(Call<PageResponse<OrderResponse>> call, Response<PageResponse<OrderResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    String errorMsg = "Failed: " + response.code();
+                    try {
+                        if (response.errorBody() != null) {
+                            errorMsg += " - " + response.errorBody().string();
+                        }
+                    } catch (Exception e) {
+                        // ignore
+                    }
+                    android.util.Log.e("OrdersRepository", "Error: " + errorMsg);
+                    callback.onError(errorMsg);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PageResponse<OrderResponse>> call, Throwable t) {
+                android.util.Log.e("OrdersRepository", "Failure: " + t.getMessage(), t);
+                callback.onError(t.getMessage());
+            }
+        });
     }
 
-    public OrderResponse getById(String id) throws IOException {
-        return api.getOrder(id).execute().body();
+    public void getById(String id, OrderDetailCallback callback) {
+        api.getOrder(id).enqueue(new Callback<OrderResponse>() {
+            @Override
+            public void onResponse(Call<OrderResponse> call, Response<OrderResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Failed: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<OrderResponse> call, Throwable t) {
+                callback.onError(t.getMessage());
+            }
+        });
     }
 
-    public OrderResponse create(CreateOrderRequest request) throws IOException {
-        return api.createOrder(request).execute().body();
+    public void create(CreateOrderRequest request, OrderDetailCallback callback) {
+        api.createOrder(request).enqueue(new Callback<OrderResponse>() {
+            @Override
+            public void onResponse(Call<OrderResponse> call, Response<OrderResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Failed: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<OrderResponse> call, Throwable t) {
+                callback.onError(t.getMessage());
+            }
+        });
     }
 
-    public OrderResponse update(UpdateOrderRequest request) throws IOException {
-        return api.updateOrder(request).execute().body();
+    public void update(UpdateOrderRequest request, OrderDetailCallback callback) {
+        api.updateOrder(request).enqueue(new Callback<OrderResponse>() {
+            @Override
+            public void onResponse(Call<OrderResponse> call, Response<OrderResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Failed: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<OrderResponse> call, Throwable t) {
+                callback.onError(t.getMessage());
+            }
+        });
     }
 
-    public OrderResponse updateStatus(UpdateStatusRequest request) throws IOException {
-        return api.updateStatus(request).execute().body();
+    public void updateStatus(UpdateStatusRequest request, OrderDetailCallback callback) {
+        api.updateStatus(request).enqueue(new Callback<OrderResponse>() {
+            @Override
+            public void onResponse(Call<OrderResponse> call, Response<OrderResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Failed: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<OrderResponse> call, Throwable t) {
+                callback.onError(t.getMessage());
+            }
+        });
     }
 
-    public boolean delete(String id) throws IOException {
-        Response<Void> resp = api.deleteOrder(id).execute();
-        return resp.isSuccessful();
+    public void delete(String id, DeleteCallback callback) {
+        api.deleteOrder(id).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess();
+                } else {
+                    callback.onError("Failed: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                callback.onError(t.getMessage());
+            }
+        });
+    }
+
+    public interface OrdersListCallback {
+        void onSuccess(PageResponse<OrderResponse> response);
+        void onError(String error);
+    }
+
+    public interface OrderDetailCallback {
+        void onSuccess(OrderResponse response);
+        void onError(String error);
+    }
+
+    public interface DeleteCallback {
+        void onSuccess();
+        void onError(String error);
     }
 }
