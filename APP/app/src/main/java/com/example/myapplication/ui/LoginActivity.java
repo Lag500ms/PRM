@@ -61,6 +61,11 @@ public class LoginActivity extends AppCompatActivity {
                 }
             });
         });
+
+        // Register link
+        findViewById(R.id.tvRegister).setOnClickListener(v -> {
+            startActivity(new Intent(this, RegisterActivity.class));
+        });
     }
 
     private void fetchAccountIdThenNavigate(String token, String username, String role) {
