@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import prm.be.dto.request.inventory.InventoryRequests;
 import prm.be.dto.request.inventory.InventoryRequests.CreateInventoryRequest;
 import prm.be.dto.request.inventory.InventoryRequests.UpdateVehicleQuantityRequest;
 import prm.be.dto.response.inventory.InventoryResponses.InventoryResponse;
@@ -57,6 +58,23 @@ public class InventoryController {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Account acc = accountService.getAccountByUsername(username);
         return ResponseEntity.ok(inventoryService.updateVehicleQuantity(request, acc.getId()));
+    }
+
+    /**
+     * Trả xe về kho Admin
+     * Sẽ trừ quantity từ dealer inventory và cộng lại vào Vehicle (kho Admin)
+     */
+    @PutMapping("/return")
+    @PreAuthorize("hasRole('DEALER')")
+    public ResponseEntity<InventoryResponse> returnVehicleToAdmin(
+            @Valid @RequestBody InventoryRequests.ReturnVehicleToAdminRequest request) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Account acc = accountService.getAccountByUsername(username);
+        return ResponseEntity.ok(inventoryService.returnVehicleToAdmin(
+                request.getInventoryId(),
+                request.getVehicleId(),
+                request.getQuantity(),
+                acc.getId()));
     }
 
     @DeleteMapping("/{id}")

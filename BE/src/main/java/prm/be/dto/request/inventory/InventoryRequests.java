@@ -26,4 +26,17 @@ public class InventoryRequests {
         @Min(0)
         private Integer quantity;
     }
+
+    @Data
+    public static class ReturnVehicleToAdminRequest {
+        @NotBlank
+        private String inventoryId;
+
+        @NotBlank
+        private String vehicleId;
+
+        @NotNull
+        @Min(1)
+        private Integer quantity;
+    }
 }
