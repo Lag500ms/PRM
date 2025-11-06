@@ -27,12 +27,15 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etCustomer"
+            android:layout_height="wrap_content"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+            <AutoCompleteTextView
+                android:id="@+id/actvCustomer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Customer" />
+                android:hint="Customer"
+                android:inputType="none"
+                android:focusable="false" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -43,7 +46,8 @@
                 android:id="@+id/etPhone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Phone" />
+                android:hint="Phone"
+                android:enabled="false" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -54,7 +58,8 @@
                 android:id="@+id/etAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Address" />
+                android:hint="Address"
+                android:enabled="false" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -89,5 +94,3 @@
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
-
-
