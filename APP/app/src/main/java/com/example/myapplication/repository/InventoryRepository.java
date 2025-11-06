@@ -2,7 +2,6 @@ package com.example.myapplication.repository;
 
 import android.content.Context;
 import com.example.myapplication.model.inventory.CreateInventoryRequest;
-import com.example.myapplication.model.inventory.ReturnVehicleToAdminRequest;
 import com.example.myapplication.model.inventory.UpdateVehicleQuantityRequest;
 import com.example.myapplication.network.InventoryApiService;
 import com.example.myapplication.network.RetrofitClient;
