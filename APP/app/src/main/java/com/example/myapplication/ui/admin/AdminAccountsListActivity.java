@@ -24,6 +24,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * AdminAccountsListActivity - Màn hình quản lý dealer accounts (CRUD đầy đủ)
+ * 
+ * Chức năng:
+ * - Hiển thị danh sách dealer accounts trong RecyclerView
+ * - FAB button → mở form tạo account mới (AdminCreateAccountActivity)
+ * - Click nút Activate/Deactivate → toggle status (UPDATE)
+ * - Long click vào item → xóa account (DELETE)
+ */
 public class AdminAccountsListActivity extends AppCompatActivity {
 
     private RecyclerView rvAccounts;
@@ -35,6 +44,9 @@ public class AdminAccountsListActivity extends AppCompatActivity {
     private AccountsAdapter adapter;
     private List<AccountResponseDTO> accounts = new ArrayList<>();
 
+    /**
+     * onCreate() - Khởi tạo Activity: setup views, adapter, load accounts
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,13 +76,18 @@ public class AdminAccountsListActivity extends AppCompatActivity {
         load();
     }
 
+    /**
+     * onResume() - Reload danh sách khi quay lại màn hình (sau khi tạo account mới)
+     */
     @Override
     protected void onResume() {
         super.onResume();
-        // Reload danh sách khi quay lại màn hình (sau khi tạo account mới)
         load();
     }
 
+    /**
+     * load() - Load danh sách accounts từ API → hiển thị trong RecyclerView
+     */
     private void load() {
         progressBar.setVisibility(View.VISIBLE);
         tvEmpty.setVisibility(View.GONE);
@@ -100,6 +117,9 @@ public class AdminAccountsListActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * deleteAccount() - Xóa account: hiện dialog xác nhận → gọi API DELETE → reload list
+     */
     private void deleteAccount(AccountResponseDTO account) {
         new android.app.AlertDialog.Builder(this)
                 .setTitle("Delete Account")
@@ -129,6 +149,9 @@ public class AdminAccountsListActivity extends AppCompatActivity {
                 .show();
     }
 
+    /**
+     * onSupportNavigateUp() - Xử lý nút back trên toolbar
+     */
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
@@ -136,6 +159,14 @@ public class AdminAccountsListActivity extends AppCompatActivity {
     }
 }
 
+/**
+ * AccountsAdapter - Adapter cho RecyclerView hiển thị danh sách dealer accounts
+ * 
+ * Chức năng:
+ * - Hiển thị danh sách accounts (username, email, role, status)
+ * - Click nút Activate/Deactivate → toggle status → gọi API PUT
+ * - Long click vào item → xóa account
+ */
 class AccountsAdapter extends RecyclerView.Adapter<AccountsAdapter.VH> {
 
     private final List<AccountResponseDTO> items;
@@ -154,12 +185,18 @@ class AccountsAdapter extends RecyclerView.Adapter<AccountsAdapter.VH> {
         this.onDeleteListener = onDeleteListener;
     }
 
+    /**
+     * onCreateViewHolder() - Tạo ViewHolder từ layout item_account.xml
+     */
     @Override
     public VH onCreateViewHolder(android.view.ViewGroup parent, int viewType) {
         View v = android.view.LayoutInflater.from(parent.getContext()).inflate(R.layout.item_account, parent, false);
         return new VH(v);
     }
 
+    /**
+     * onBindViewHolder() - Gắn dữ liệu account vào ViewHolder và setup click listeners
+     */
     @Override
     public void onBindViewHolder(VH h, int pos) {
         AccountResponseDTO a = items.get(pos);
@@ -237,14 +274,23 @@ class AccountsAdapter extends RecyclerView.Adapter<AccountsAdapter.VH> {
         });
     }
     
+    /**
+     * updateStatusUI() - Cập nhật UI theo trạng thái active/inactive của account
+     */
     private void updateStatusUI(VH h, AccountResponseDTO a) {
         h.tvStatus.setText(a.isActive() ? "Active" : "Inactive");
         h.btnToggleStatus.setText(a.isActive() ? "Deactivate" : "Activate");
     }
 
+    /**
+     * getItemCount() - Trả về số lượng items trong list
+     */
     @Override
     public int getItemCount() { return items != null ? items.size() : 0; }
 
+    /**
+     * VH - ViewHolder giữ các view để hiển thị account
+     */
     class VH extends RecyclerView.ViewHolder {
         TextView tvUsername, tvEmail, tvRole, tvStatus;
         com.google.android.material.button.MaterialButton btnToggleStatus;

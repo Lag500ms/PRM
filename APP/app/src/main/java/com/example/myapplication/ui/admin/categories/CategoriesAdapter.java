@@ -11,6 +11,14 @@ import com.example.myapplication.model.category.CategoryResponseDTO;
 import com.google.android.material.button.MaterialButton;
 import java.util.List;
 
+/**
+ * CategoriesAdapter - Adapter cho RecyclerView hiển thị danh sách categories
+ * 
+ * Chức năng:
+ * - Hiển thị danh sách categories
+ * - Click nút Edit → gọi onEditListener → mở dialog sửa
+ * - Click nút Delete → gọi onDeleteListener → xóa category
+ */
 public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.VH> {
 
     private final List<CategoryResponseDTO> items;
@@ -31,6 +39,9 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.VH
         this.onDeleteListener = onDeleteListener;
     }
 
+    /**
+     * onCreateViewHolder() - Tạo ViewHolder từ layout item_category.xml
+     */
     @NonNull
     @Override
     public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -38,6 +49,9 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.VH
         return new VH(view);
     }
 
+    /**
+     * onBindViewHolder() - Gắn dữ liệu category vào ViewHolder và setup click listeners
+     */
     @Override
     public void onBindViewHolder(@NonNull VH holder, int position) {
         CategoryResponseDTO category = items.get(position);
@@ -56,11 +70,17 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.VH
         });
     }
 
+    /**
+     * getItemCount() - Trả về số lượng items trong list
+     */
     @Override
     public int getItemCount() {
         return items != null ? items.size() : 0;
     }
 
+    /**
+     * VH - ViewHolder giữ các view để hiển thị category
+     */
     static class VH extends RecyclerView.ViewHolder {
         TextView tvCategoryName;
         MaterialButton btnEdit, btnDelete;
