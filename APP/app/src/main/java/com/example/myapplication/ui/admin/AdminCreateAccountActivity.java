@@ -12,6 +12,14 @@ import com.example.myapplication.repository.AdminAccountsRepository;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
+/**
+ * AdminCreateAccountActivity - Màn hình tạo dealer account mới (CREATE)
+ * 
+ * Chức năng:
+ * - Form nhập username, email, password
+ * - Bấm Create → gọi API POST /api/v1/accounts/save → tạo dealer account
+ * - Thành công → finish() → quay lại ListActivity → onResume() → reload list
+ */
 public class AdminCreateAccountActivity extends AppCompatActivity {
 
     private TextInputEditText etUsername, etEmail, etPassword;
@@ -19,6 +27,9 @@ public class AdminCreateAccountActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private AdminAccountsRepository repo;
 
+    /**
+     * onCreate() - Khởi tạo Activity: setup views, setup btnCreate click listener
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +52,9 @@ public class AdminCreateAccountActivity extends AppCompatActivity {
         btnCreate.setOnClickListener(v -> create());
     }
 
+    /**
+     * create() - Tạo dealer account: validate form → build request → gọi API POST → finish()
+     */
     private void create() {
         String username = etUsername.getText() != null ? etUsername.getText().toString().trim() : "";
         String email = etEmail.getText() != null ? etEmail.getText().toString().trim() : "";

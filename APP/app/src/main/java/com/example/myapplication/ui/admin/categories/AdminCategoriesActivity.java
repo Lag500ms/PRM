@@ -22,6 +22,15 @@ import retrofit2.Response;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * AdminCategoriesActivity - Màn hình quản lý categories (CRUD đầy đủ)
+ * 
+ * Chức năng:
+ * - Hiển thị danh sách categories trong RecyclerView
+ * - FAB button → dialog tạo category mới (CREATE)
+ * - Click nút Edit → dialog sửa category (UPDATE)
+ * - Click nút Delete → dialog xác nhận xóa (DELETE)
+ */
 public class AdminCategoriesActivity extends AppCompatActivity {
 
     private RecyclerView rvCategories;
@@ -32,6 +41,9 @@ public class AdminCategoriesActivity extends AppCompatActivity {
     private CategoriesAdapter adapter;
     private List<CategoryResponseDTO> categories = new ArrayList<>();
 
+    /**
+     * onCreate() - Khởi tạo Activity: setup views, adapter, load categories
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +72,9 @@ public class AdminCategoriesActivity extends AppCompatActivity {
         loadCategories();
     }
 
+    /**
+     * loadCategories() - Load danh sách categories từ API → hiển thị trong RecyclerView
+     */
     private void loadCategories() {
         progressBar.setVisibility(View.VISIBLE);
         tvEmpty.setVisibility(View.GONE);
@@ -88,23 +103,9 @@ public class AdminCategoriesActivity extends AppCompatActivity {
         });
     }
 
-    private void showCreateDialog() {
-        View dialogView = getLayoutInflater().inflate(R.layout.dialog_category_form, null);
-        TextInputEditText etName = dialogView.findViewById(R.id.etCategoryName);
-
-        new AlertDialog.Builder(this)
-                .setTitle("Create Category")
-                .setView(dialogView)
-                .setPositiveButton("Create", (dialog, which) -> {
-                    String name = etName.getText() != null ? etName.getText().toString().trim() : "";
-                    if (!name.isEmpty()) {
-                        createCategory(name);
-                    }
-                })
-                .setNegativeButton("Cancel", null)
-                .show();
-    }
-
+    /**
+     * showEditDialog() - Hiện dialog để sửa category (fill sẵn tên cũ)
+     */
     private void showEditDialog(CategoryResponseDTO category) {
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_category_form, null);
         TextInputEditText etName = dialogView.findViewById(R.id.etCategoryName);
@@ -123,31 +124,9 @@ public class AdminCategoriesActivity extends AppCompatActivity {
                 .show();
     }
 
-    private void createCategory(String name) {
-        progressBar.setVisibility(View.VISIBLE);
-        com.example.myapplication.model.category.CategoryRequestDTO request = new com.example.myapplication.model.category.CategoryRequestDTO();
-        request.setName(name);
-
-        categoryApiService.createCategory(request).enqueue(new Callback<CategoryResponseDTO>() {
-            @Override
-            public void onResponse(Call<CategoryResponseDTO> call, Response<CategoryResponseDTO> response) {
-                progressBar.setVisibility(View.GONE);
-                if (response.isSuccessful()) {
-                    Toast.makeText(AdminCategoriesActivity.this, "Category created", Toast.LENGTH_SHORT).show();
-                    loadCategories();
-                } else {
-                    Toast.makeText(AdminCategoriesActivity.this, "Failed to create", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<CategoryResponseDTO> call, Throwable t) {
-                progressBar.setVisibility(View.GONE);
-                Toast.makeText(AdminCategoriesActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
+    /**
+     * updateCategory() - Sửa category: gọi API PUT → reload list
+     */
     private void updateCategory(String id, String name) {
         progressBar.setVisibility(View.VISIBLE);
         com.example.myapplication.model.category.CategoryRequestDTO request = new com.example.myapplication.model.category.CategoryRequestDTO();
@@ -173,6 +152,9 @@ public class AdminCategoriesActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * deleteCategory() - Xóa category: hiện dialog xác nhận → gọi API DELETE → reload list
+     */
     private void deleteCategory(CategoryResponseDTO category) {
         new AlertDialog.Builder(this)
                 .setTitle("Delete Category")
@@ -200,6 +182,54 @@ public class AdminCategoriesActivity extends AppCompatActivity {
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
+    }
+
+    /**
+     * showCreateDialog() - Hiện dialog để tạo category mới
+     */
+    private void showCreateDialog() {
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_category_form, null);
+        TextInputEditText etName = dialogView.findViewById(R.id.etCategoryName);
+
+        new AlertDialog.Builder(this)
+                .setTitle("Create Category")
+                .setView(dialogView)
+                .setPositiveButton("Create", (dialog, which) -> {
+                    String name = etName.getText() != null ? etName.getText().toString().trim() : "";
+                    if (!name.isEmpty()) {
+                        createCategory(name);
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    /**
+     * createCategory() - Tạo category mới: gọi API POST → reload list
+     */
+    private void createCategory(String name) {
+        progressBar.setVisibility(View.VISIBLE);
+        com.example.myapplication.model.category.CategoryRequestDTO request = new com.example.myapplication.model.category.CategoryRequestDTO();
+        request.setName(name);
+
+        categoryApiService.createCategory(request).enqueue(new Callback<CategoryResponseDTO>() {
+            @Override
+            public void onResponse(Call<CategoryResponseDTO> call, Response<CategoryResponseDTO> response) {
+                progressBar.setVisibility(View.GONE);
+                if (response.isSuccessful()) {
+                    Toast.makeText(AdminCategoriesActivity.this, "Category created", Toast.LENGTH_SHORT).show();
+                    loadCategories();
+                } else {
+                    Toast.makeText(AdminCategoriesActivity.this, "Failed to create", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<CategoryResponseDTO> call, Throwable t) {
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(AdminCategoriesActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
 
