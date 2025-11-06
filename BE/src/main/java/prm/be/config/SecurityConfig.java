@@ -43,7 +43,11 @@ public class SecurityConfig {
                                 "/v1/auth/**",
                                 "/api/v1/auth/login",
                                 "/api/v1/auth/logout",
-                                "/api/v1/accounts/register")
+                                "/api/v1/accounts/register",
+                                "/api/v1/accounts/register-full",
+                                "/api/v1/accounts/search-public",
+                                "/api/v1/accounts/update-public",
+                                "/api/v1/accounts/delete-public/**")
                         .permitAll()
                         .anyRequest().authenticated())
                 .formLogin(form -> form.disable())

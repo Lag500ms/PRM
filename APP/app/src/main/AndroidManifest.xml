@@ -75,6 +75,15 @@
         <activity
             android:name=".ui.chatbot.ChatbotActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.customer.CustomerManagementActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.customer.CustomerFormActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.customer.CustomerDetailActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

@@ -69,6 +69,11 @@ public class DashboardDealerActivity extends AppCompatActivity {
             startActivity(new Intent(this, ChatbotActivity.class));
         });
 
+        // User button
+        findViewById(R.id.btnUser).setOnClickListener(v -> {
+            startActivity(new Intent(this, com.example.myapplication.ui.customer.CustomerManagementActivity.class));
+        });
+
         // Bottom nav - Logout
         findViewById(R.id.bottomNavHost).setOnClickListener(v -> {
             new AuthRepository(this).logout(() -> {
