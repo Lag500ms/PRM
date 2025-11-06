@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import prm.be.dto.request.account.RegisterRequestDTO;
+import prm.be.dto.request.account.FullRegisterRequestDTO;
 import prm.be.dto.request.account.AccountUpdateRequestDTO;
 import prm.be.dto.response.account.AccountResponseDTO;
 import prm.be.entity.Account;
@@ -34,6 +35,27 @@ public class AccountController {
     @PreAuthorize("hasRole('ADMIN')")
     public void saveByAdmin(@Valid @RequestBody RegisterRequestDTO request) {
         accountService.createDealerByAdmin(request);
+    }
+
+    /**
+     * Register account with full information (username, password, email, role, fullName, phone, address, isActive)
+     * Public endpoint - anyone can register with full details
+     */
+    @PostMapping("/register-full")
+    public ResponseEntity<AccountResponseDTO> registerWithFullInfo(@Valid @RequestBody FullRegisterRequestDTO request) {
+        Account created = accountService.createAccountWithFullInfo(request, false);
+        return ResponseEntity.ok(modelMapper.map(created, AccountResponseDTO.class));
+    }
+
+    /**
+     * Create account with full information by Admin
+     * Admin can create any type of account (ADMIN, DEALER) with complete information
+     */
+    @PostMapping("/create-full")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<AccountResponseDTO> createFullAccountByAdmin(@Valid @RequestBody FullRegisterRequestDTO request) {
+        Account created = accountService.createAccountWithFullInfo(request, true);
+        return ResponseEntity.ok(modelMapper.map(created, AccountResponseDTO.class));
     }
 
     @GetMapping("/getAll")
@@ -72,9 +94,29 @@ public class AccountController {
         return ResponseEntity.ok(modelMapper.map(updated, AccountResponseDTO.class));
     }
 
+    /**
+     * Public update endpoint - No authentication required
+     * Anyone can update their account information
+     */
+    @PutMapping("/update-public")
+    public ResponseEntity<AccountResponseDTO> updatePublic(@Valid @RequestBody AccountUpdateRequestDTO request) {
+        Account updated = accountService.updateAccountById(request);
+        return ResponseEntity.ok(modelMapper.map(updated, AccountResponseDTO.class));
+    }
+
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable String id) {
+        accountService.deleteAccountById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Public delete endpoint - No authentication required
+     * Anyone can delete an account by ID
+     */
+    @DeleteMapping("/delete-public/{id}")
+    public ResponseEntity<Void> deletePublic(@PathVariable String id) {
         accountService.deleteAccountById(id);
         return ResponseEntity.noContent().build();
     }
@@ -95,6 +137,25 @@ public class AccountController {
     @GetMapping("/search")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<AccountResponseDTO>> searchAccountsByUsername(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<Account> accountPage = accountService.searchAccount(keyword, page, size);
+
+        Page<AccountResponseDTO> response = accountPage.map(acc ->
+                modelMapper.map(acc, AccountResponseDTO.class)
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Public search endpoint - No authentication required
+     * Anyone can search accounts by username (useful for public user directory)
+     */
+    @GetMapping("/search-public")
+    public ResponseEntity<Page<AccountResponseDTO>> searchAccountsPublic(
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {

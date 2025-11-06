@@ -16,5 +16,25 @@ public class AccountResponsePageDTO {
     private long totalElements;
     private int number;
     private int size;
-}
 
+    // Manual getters for Lombok compatibility
+    public List<AccountResponseDTO> getContent() {
+        return content;
+    }
+
+    public int getTotalPages() {
+        return totalPages;
+    }
+
+    public long getTotalElements() {
+        return totalElements;
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public int getSize() {
+        return size;
+    }
+}

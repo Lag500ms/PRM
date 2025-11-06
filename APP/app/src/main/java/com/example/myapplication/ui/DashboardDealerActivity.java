@@ -21,7 +21,6 @@ import com.example.myapplication.ui.chatbot.ChatbotActivity;
 import com.example.myapplication.ui.InventoryActivity;
 import com.example.myapplication.ui.orders.OrdersListActivity;
 import com.example.myapplication.ui.schedules.SchedulesListActivity;
-import com.example.myapplication.utils.SharedPrefManager;
 
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -69,6 +68,11 @@ public class DashboardDealerActivity extends AppCompatActivity {
         // Chatbot button
         findViewById(R.id.btnChat).setOnClickListener(v -> {
             startActivity(new Intent(this, ChatbotActivity.class));
+        });
+
+        // User button
+        findViewById(R.id.btnUser).setOnClickListener(v -> {
+            startActivity(new Intent(this, com.example.myapplication.ui.customer.CustomerManagementActivity.class));
         });
 
         // Profile avatar - Show popup menu

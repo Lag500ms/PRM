@@ -1,6 +1,7 @@
 package com.example.myapplication.network;
 
 import com.example.myapplication.model.account.request.AccountUpdateRequestDTO;
+import com.example.myapplication.model.account.request.FullRegisterRequestDTO;
 import com.example.myapplication.model.account.request.RegisterRequestDTO;
 import com.example.myapplication.model.account.response.AccountResponseDTO;
 import com.example.myapplication.model.account.response.AccountResponsePageDTO;
@@ -15,6 +16,9 @@ public interface AccountApiService {
 
     @POST("v1/accounts/register")
     Call<Void> register(@Body RegisterRequestDTO request);
+
+    @POST("v1/accounts/register-full")
+    Call<AccountResponseDTO> registerWithFullInfo(@Body FullRegisterRequestDTO request);
 
     @POST("v1/accounts/save")
     Call<Void> saveByAdmin(@Body RegisterRequestDTO request);
@@ -34,8 +38,14 @@ public interface AccountApiService {
     @PUT("v1/accounts/update")
     Call<AccountResponseDTO> update(@Body AccountUpdateRequestDTO request);
 
+    @PUT("v1/accounts/update-public")
+    Call<AccountResponseDTO> updatePublic(@Body AccountUpdateRequestDTO request);
+
     @DELETE("v1/accounts/{id}")
     Call<Void> delete(@Path("id") String id);
+
+    @DELETE("v1/accounts/delete-public/{id}")
+    Call<Void> deletePublic(@Path("id") String id);
 
     @PUT("v1/accounts/account/status")
     Call<Map<String, String>> changeAccountStatus(
@@ -50,6 +60,11 @@ public interface AccountApiService {
             @Query("size") int size
     );
 
+    @GET("v1/accounts/search-public")
+    Call<AccountResponsePageDTO> searchAccountsPublic(
+            @Query("keyword") String keyword,
+            @Query("page") int page,
+            @Query("size") int size
+    );
 
 }
-

@@ -16,6 +16,7 @@ import prm.be.exception.NotFoundException;
 import prm.be.exception.UnauthorizedException;
 import prm.be.repository.AccountRepository;
 import prm.be.dto.request.account.RegisterRequestDTO;
+import prm.be.dto.request.account.FullRegisterRequestDTO;
 import prm.be.dto.request.account.AccountUpdateRequestDTO;
 import java.util.List;
 
@@ -63,6 +64,79 @@ public class AccountService {
                 .build();
 
         return accountRepository.save(toSave);
+    }
+
+
+    /**
+     * Create account with full information (username, password, email, role, details, isActive)
+     * Can be used by Admin to create any type of account with complete information
+     */
+    public Account createAccountWithFullInfo(FullRegisterRequestDTO request, boolean createdByAdmin) {
+        // Validate username uniqueness
+        if (accountRepository.existsByUsername(request.getUsername())) {
+            throw new UnauthorizedException("Username already exists");
+        }
+
+        // Validate email uniqueness
+        if (accountRepository.existsByEmail(request.getEmail())) {
+            throw new UnauthorizedException("Email already exists");
+        }
+
+        // Build AccountDetails if any detail field is provided
+        AccountDetails details = null;
+        if (StringUtils.hasText(request.getFullName()) ||
+            StringUtils.hasText(request.getPhone()) ||
+            StringUtils.hasText(request.getAddress())) {
+
+            details = AccountDetails.builder()
+                    .fullName(request.getFullName())
+                    .phone(request.getPhone())
+                    .address(request.getAddress())
+                    .build();
+
+            // Debug logging
+            System.out.println("AccountDetails created: fullName=" + details.getFullName()
+                + ", phone=" + details.getPhone()
+                + ", address=" + details.getAddress());
+        } else {
+            System.out.println("No AccountDetails created - all fields are empty");
+        }
+
+        // Determine role and active status based on creator
+        Role accountRole;
+        boolean isActive;
+
+        if (createdByAdmin) {
+            // Admin can set any role (or default to DEALER) and any active status
+            accountRole = request.getRole() != null ? request.getRole() : Role.DEALER;
+            isActive = request.getIsActive() != null ? request.getIsActive() : true;
+        } else {
+            // Public registration: FORCE role=null and isActive=false (ignore request values)
+            accountRole = null;
+            isActive = false;
+        }
+
+        // Build and save account
+        Account toSave = Account.builder()
+                .username(request.getUsername())
+                .password(request.getPassword())
+                .email(request.getEmail())
+                .role(accountRole)
+                .details(details)
+                .isActive(isActive)
+                .build();
+
+        // Debug logging before save
+        System.out.println("Account to save - username: " + toSave.getUsername()
+            + ", details: " + (toSave.getDetails() != null ? toSave.getDetails().getPhone() : "null"));
+
+        Account saved = accountRepository.save(toSave);
+
+        // Debug logging after save
+        System.out.println("Account saved - id: " + saved.getId()
+            + ", details: " + (saved.getDetails() != null ? saved.getDetails().getPhone() : "null"));
+
+        return saved;
     }
 
 
