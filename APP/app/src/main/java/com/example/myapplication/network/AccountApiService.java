@@ -13,37 +13,37 @@ import retrofit2.http.*;
 
 public interface AccountApiService {
 
-    @POST("api/v1/accounts/register")
+    @POST("v1/accounts/register")
     Call<Void> register(@Body RegisterRequestDTO request);
 
-    @POST("api/v1/accounts/save")
+    @POST("v1/accounts/save")
     Call<Void> saveByAdmin(@Body RegisterRequestDTO request);
 
-    @GET("api/v1/accounts/getAll")
+    @GET("v1/accounts/getAll")
     Call<List<AccountResponseDTO>> getAll();
 
-    @GET("api/v1/accounts/{id}")
+    @GET("v1/accounts/{id}")
     Call<AccountResponseDTO> getById(@Path("id") String id);
 
-    @GET("api/v1/accounts/by-email/{email}")
+    @GET("v1/accounts/by-email/{email}")
     Call<AccountResponseDTO> getByEmail(@Path("email") String email);
 
-    @GET("api/v1/accounts/by-username/{username}")
+    @GET("v1/accounts/by-username/{username}")
     Call<AccountResponseDTO> getByUsername(@Path("username") String username);
 
-    @PUT("api/v1/accounts/update")
+    @PUT("v1/accounts/update")
     Call<AccountResponseDTO> update(@Body AccountUpdateRequestDTO request);
 
-    @DELETE("api/v1/accounts/{id}")
+    @DELETE("v1/accounts/{id}")
     Call<Void> delete(@Path("id") String id);
 
-    @PUT("api/v1/accounts/account/status")
+    @PUT("v1/accounts/account/status")
     Call<Map<String, String>> changeAccountStatus(
             @Query("email") String email,
             @Query("active") boolean active
     );
 
-    @GET("api/v1/accounts/search")
+    @GET("v1/accounts/search")
     Call<AccountResponsePageDTO> searchAccountsByUsername(
             @Query("keyword") String keyword,
             @Query("page") int page,

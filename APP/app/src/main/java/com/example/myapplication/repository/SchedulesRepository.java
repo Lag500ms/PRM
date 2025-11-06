@@ -8,8 +8,8 @@ import com.example.myapplication.model.schedules.UpdateStatusRequest;
 import com.example.myapplication.model.schedules.ScheduleResponse;
 import com.example.myapplication.network.RetrofitClient;
 import com.example.myapplication.network.SchedulesApiService;
-import java.io.IOException;
-import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 public class SchedulesRepository {
@@ -20,29 +20,126 @@ public class SchedulesRepository {
         this.api = RetrofitClient.createWithAuth(context, SchedulesApiService.class);
     }
 
-    public PageResponse<ScheduleResponse> list(int page, int size, String status, String start, String end)
-            throws IOException {
-        return api.listSchedules(page, size, status, start, end).execute().body();
+    public void list(int page, int size, String status, String start, String end, SchedulesListCallback callback) {
+        api.listSchedules(page, size, status, start, end).enqueue(new Callback<PageResponse<ScheduleResponse>>() {
+            @Override
+            public void onResponse(Call<PageResponse<ScheduleResponse>> call, Response<PageResponse<ScheduleResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Failed: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PageResponse<ScheduleResponse>> call, Throwable t) {
+                callback.onError(t.getMessage());
+            }
+        });
     }
 
-    public ScheduleResponse getById(String id) throws IOException {
-        return api.getSchedule(id).execute().body();
+    public void getById(String id, ScheduleDetailCallback callback) {
+        api.getSchedule(id).enqueue(new Callback<ScheduleResponse>() {
+            @Override
+            public void onResponse(Call<ScheduleResponse> call, Response<ScheduleResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Failed: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ScheduleResponse> call, Throwable t) {
+                callback.onError(t.getMessage());
+            }
+        });
     }
 
-    public ScheduleResponse create(CreateScheduleRequest request) throws IOException {
-        return api.createSchedule(request).execute().body();
+    public void create(CreateScheduleRequest request, ScheduleDetailCallback callback) {
+        api.createSchedule(request).enqueue(new Callback<ScheduleResponse>() {
+            @Override
+            public void onResponse(Call<ScheduleResponse> call, Response<ScheduleResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Failed: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ScheduleResponse> call, Throwable t) {
+                callback.onError(t.getMessage());
+            }
+        });
     }
 
-    public ScheduleResponse update(UpdateScheduleRequest request) throws IOException {
-        return api.updateSchedule(request).execute().body();
+    public void update(UpdateScheduleRequest request, ScheduleDetailCallback callback) {
+        api.updateSchedule(request).enqueue(new Callback<ScheduleResponse>() {
+            @Override
+            public void onResponse(Call<ScheduleResponse> call, Response<ScheduleResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Failed: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ScheduleResponse> call, Throwable t) {
+                callback.onError(t.getMessage());
+            }
+        });
     }
 
-    public ScheduleResponse updateStatus(UpdateStatusRequest request) throws IOException {
-        return api.updateStatus(request).execute().body();
+    public void updateStatus(UpdateStatusRequest request, ScheduleDetailCallback callback) {
+        api.updateStatus(request).enqueue(new Callback<ScheduleResponse>() {
+            @Override
+            public void onResponse(Call<ScheduleResponse> call, Response<ScheduleResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Failed: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ScheduleResponse> call, Throwable t) {
+                callback.onError(t.getMessage());
+            }
+        });
     }
 
-    public boolean delete(String id) throws IOException {
-        Response<Void> resp = api.deleteSchedule(id).execute();
-        return resp.isSuccessful();
+    public void delete(String id, DeleteCallback callback) {
+        api.deleteSchedule(id).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess();
+                } else {
+                    callback.onError("Failed: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                callback.onError(t.getMessage());
+            }
+        });
+    }
+
+    public interface SchedulesListCallback {
+        void onSuccess(PageResponse<ScheduleResponse> response);
+        void onError(String error);
+    }
+
+    public interface ScheduleDetailCallback {
+        void onSuccess(ScheduleResponse response);
+        void onError(String error);
+    }
+
+    public interface DeleteCallback {
+        void onSuccess();
+        void onError(String error);
     }
 }

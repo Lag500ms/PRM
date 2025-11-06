@@ -21,6 +21,60 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.RegisterActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.DashboardAdminActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.admin.AdminAccountsListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.admin.AdminCreateAccountActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.admin.vehicles.AdminVehiclesListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.admin.vehicles.AdminVehicleFormActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.admin.categories.AdminCategoriesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.DashboardDealerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.orders.OrdersListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.orders.OrderFormActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.orders.OrderDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.schedules.SchedulesListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.schedules.ScheduleFormActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.schedules.ScheduleDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.InventoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.inventory.InventoryReceiveActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.admin.AdminDashboardReportActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.chatbot.ChatbotActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
