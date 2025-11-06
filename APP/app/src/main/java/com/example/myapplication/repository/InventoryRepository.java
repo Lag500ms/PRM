@@ -91,6 +91,24 @@ public class InventoryRepository {
         });
     }
 
+    public void returnVehicle(UpdateVehicleQuantityRequest request, InventoryDetailCallback callback) {
+        api.returnVehicle(request).enqueue(new Callback<InventoryResponse>() {
+            @Override
+            public void onResponse(Call<InventoryResponse> call, Response<InventoryResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Failed: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<InventoryResponse> call, Throwable t) {
+                callback.onError(t.getMessage());
+            }
+        });
+    }
+
     public void deleteInventory(String id, DeleteCallback callback) {
         api.deleteInventory(id).enqueue(new Callback<Void>() {
             @Override
