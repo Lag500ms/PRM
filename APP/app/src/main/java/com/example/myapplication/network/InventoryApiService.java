@@ -2,7 +2,6 @@ package com.example.myapplication.network;
 
 import com.example.myapplication.model.inventory.CreateInventoryRequest;
 import com.example.myapplication.model.inventory.InventoryResponse;
-import com.example.myapplication.model.inventory.ReturnVehicleToAdminRequest;
 import com.example.myapplication.model.inventory.UpdateVehicleQuantityRequest;
 import java.util.List;
 import retrofit2.Call;
@@ -28,7 +27,7 @@ public interface InventoryApiService {
     Call<InventoryResponse> updateQuantity(@Body UpdateVehicleQuantityRequest request);
 
     @PUT("v1/dealer/inventory/return")
-    Call<InventoryResponse> returnVehicleToAdmin(@Body ReturnVehicleToAdminRequest request);
+    Call<InventoryResponse> returnVehicle(@Body UpdateVehicleQuantityRequest request);
 
     @DELETE("v1/dealer/inventory/{id}")
     Call<Void> deleteInventory(@Path("id") String id);
