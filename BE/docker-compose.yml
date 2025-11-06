@@ -16,7 +16,7 @@ services:
     build: .
     container_name: be_app
     ports:
-      - "8080:8080"
+      - "8069:8069"
     environment:
       POSTGRES_URL: jdbc:postgresql://postgres:5432/BE
       POSTGRES_USER: postgres
