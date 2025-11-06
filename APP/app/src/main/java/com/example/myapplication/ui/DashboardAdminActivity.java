@@ -4,6 +4,8 @@ package com.example.myapplication.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.PopupMenu;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -28,10 +30,8 @@ public class DashboardAdminActivity extends AppCompatActivity {
             startActivity(new Intent(this, AdminVehiclesListActivity.class));
         });
 
-        // Chatbot button
-        findViewById(R.id.btnChat).setOnClickListener(v -> {
-            startActivity(new Intent(this, ChatbotActivity.class));
-        });
+        // Chatbot button - Ẩn cho Admin (chỉ Dealer mới có chatbot)
+        findViewById(R.id.btnChat).setVisibility(View.GONE);
 
         // Categories button
         findViewById(R.id.btnCategories).setOnClickListener(v -> {
@@ -43,17 +43,23 @@ public class DashboardAdminActivity extends AppCompatActivity {
             startActivity(new Intent(this, AdminAccountsListActivity.class));
         });
 
-        // Bottom nav - Message
-        findViewById(R.id.bottomNavMessage).setOnClickListener(v -> {
-            startActivity(new Intent(this, ChatbotActivity.class));
-        });
 
-        // Bottom nav - Logout (Host icon repurposed)
-        findViewById(R.id.bottomNavHost).setOnClickListener(v -> {
-            new AuthRepository(this).logout(() -> {
-                startActivity(new Intent(this, LoginActivity.class));
-                finish();
+        // Profile avatar - Show popup menu
+        ImageView imgProfile = findViewById(R.id.imgProfile);
+        imgProfile.setOnClickListener(v -> {
+            PopupMenu popupMenu = new PopupMenu(this, v);
+            popupMenu.getMenuInflater().inflate(R.menu.menu_profile_popup, popupMenu.getMenu());
+            popupMenu.setOnMenuItemClickListener(item -> {
+                if (item.getItemId() == R.id.menu_logout) {
+                    new AuthRepository(this).logout(() -> {
+                        startActivity(new Intent(this, LoginActivity.class));
+                        finish();
+                    });
+                    return true;
+                }
+                return false;
             });
+            popupMenu.show();
         });
     }
 }

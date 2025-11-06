@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.R;
-import com.example.myapplication.model.chatbot.ChatbotRequest;
 import com.example.myapplication.model.chatbot.ChatbotResponse;
 import com.example.myapplication.repository.ChatbotRepository;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -25,7 +24,8 @@ public class ChatbotActivity extends AppCompatActivity {
     private MaterialButton btnSend;
     private ProgressBar progressBar;
     private ChatbotRepository repo;
-    private List<String> messages = new ArrayList<>();
+    private ChatAdapter adapter;
+    private List<ChatAdapter.ChatMessage> messages = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +45,12 @@ public class ChatbotActivity extends AppCompatActivity {
         btnSend = findViewById(R.id.btnSend);
         progressBar = findViewById(R.id.progressBar);
 
+        adapter = new ChatAdapter(messages);
         rvChat.setLayoutManager(new LinearLayoutManager(this));
+        rvChat.setAdapter(adapter);
+
+        // Welcome message
+        addMessage("Xin chào! Em có thể giúp anh/chị gì ạ? 😊", false);
 
         btnSend.setOnClickListener(v -> send());
     }
@@ -53,10 +58,14 @@ public class ChatbotActivity extends AppCompatActivity {
     private void send() {
         String question = etMessage.getText() != null ? etMessage.getText().toString().trim() : "";
         if (question.isEmpty()) {
-            Toast.makeText(this, "Please enter a question", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Vui lòng nhập câu hỏi", Toast.LENGTH_SHORT).show();
             return;
         }
+        
+        // Add user message
+        addMessage(question, true);
         etMessage.setText("");
+        
         progressBar.setVisibility(View.VISIBLE);
         btnSend.setEnabled(false);
 
@@ -66,7 +75,10 @@ public class ChatbotActivity extends AppCompatActivity {
                 progressBar.setVisibility(View.GONE);
                 btnSend.setEnabled(true);
                 if (resp != null && resp.getAnswer() != null) {
-                    Toast.makeText(ChatbotActivity.this, "Answer: " + resp.getAnswer(), Toast.LENGTH_LONG).show();
+                    // Add bot response
+                    addMessage(resp.getAnswer(), false);
+                } else {
+                    addMessage("Xin lỗi, em không hiểu câu hỏi này.", false);
                 }
             }
 
@@ -74,9 +86,15 @@ public class ChatbotActivity extends AppCompatActivity {
             public void onError(String error) {
                 progressBar.setVisibility(View.GONE);
                 btnSend.setEnabled(true);
-                Toast.makeText(ChatbotActivity.this, "Error: " + error, Toast.LENGTH_LONG).show();
+                addMessage("Xin lỗi, có lỗi xảy ra: " + error, false);
             }
         });
+    }
+
+    private void addMessage(String text, boolean isUser) {
+        messages.add(new ChatAdapter.ChatMessage(text, isUser));
+        adapter.notifyItemInserted(messages.size() - 1);
+        rvChat.scrollToPosition(messages.size() - 1);
     }
 }
 
