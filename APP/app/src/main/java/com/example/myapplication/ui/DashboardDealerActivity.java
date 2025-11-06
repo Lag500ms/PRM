@@ -4,7 +4,9 @@ package com.example.myapplication.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -69,12 +71,22 @@ public class DashboardDealerActivity extends AppCompatActivity {
             startActivity(new Intent(this, ChatbotActivity.class));
         });
 
-        // Bottom nav - Logout
-        findViewById(R.id.bottomNavHost).setOnClickListener(v -> {
-            new AuthRepository(this).logout(() -> {
-                startActivity(new Intent(this, LoginActivity.class));
-                finish();
+        // Profile avatar - Show popup menu
+        ImageView imgProfile = findViewById(R.id.imgProfile);
+        imgProfile.setOnClickListener(v -> {
+            PopupMenu popupMenu = new PopupMenu(this, v);
+            popupMenu.getMenuInflater().inflate(R.menu.menu_profile_popup, popupMenu.getMenu());
+            popupMenu.setOnMenuItemClickListener(item -> {
+                if (item.getItemId() == R.id.menu_logout) {
+                    new AuthRepository(this).logout(() -> {
+                        startActivity(new Intent(this, LoginActivity.class));
+                        finish();
+                    });
+                    return true;
+                }
+                return false;
             });
+            popupMenu.show();
         });
     }
 
